@@ -40,17 +40,25 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export const overview = [
-  { title: "Scheduling & Capacity", url: "/scheduling", icon: CalendarDays },
+export const overview: { title: string; url: string; icon: typeof CalendarDays }[] = [];
+
+export const planning = [
+  { title: "Products", url: "/products", icon: Package },
+  { title: "Recipes", url: "/recipes", icon: ClipboardCheck },
+  { title: "Production Orders", url: "/production-orders", icon: ClipboardList },
   { title: "Planner", url: "/planner", icon: CalendarDays },
+  { title: "Scheduling & Capacity", url: "/scheduling", icon: CalendarDays },
+  { title: "Reports & Compliance", url: "/reports", icon: ClipboardCheck },
+  { title: "Inventory", url: "/inventory", icon: Package },
 ];
 
 export const workforce = [
-  { title: "Shifts", url: "/shifts", icon: CalendarDays },
+  { title: "Users", url: "/users", icon: Users },
   { title: "Assignments", url: "/assignments", icon: UserCog },
+  { title: "Skills & Certifications", url: "/skills", icon: ListChecks },
+  { title: "Shifts", url: "/shifts", icon: CalendarDays },
 ];
 
-export const planning: typeof overview = [];
 export const execution: typeof overview = [];
 export const monitoring: typeof overview = [];
 export const platform: typeof overview = [];
@@ -104,8 +112,8 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-2">
-        {renderGroup("Production schedule", overview)}
-        {renderGroup("Shifts & crew", workforce)}
+        {renderGroup("Planning", planning)}
+        {renderGroup("Workforce", workforce)}
       </SidebarContent>
       <SidebarFooter className="p-3">
         <div className="rounded-xl border border-border/60 bg-card/60 p-3 group-data-[collapsible=icon]:hidden">
