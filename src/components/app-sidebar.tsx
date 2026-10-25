@@ -41,74 +41,19 @@ import {
 } from "@/components/ui/sidebar";
 
 export const overview = [
-  { title: "Control Center", url: "/", icon: LayoutDashboard },
-  { title: "Production Lines", url: "/lines", icon: Factory },
-  { title: "Stations", url: "/stations", icon: Cpu },
-  { title: "Live Shop Floor", url: "/live", icon: Radio },
-];
-
-export const planning = [
-  { title: "Products", url: "/products", icon: Package },
-  { title: "Recipes", url: "/recipes", icon: ClipboardCheck },
-  { title: "Production Orders", url: "/production-orders", icon: ClipboardList },
-  { title: "Planner", url: "/planner", icon: CalendarDays },
   { title: "Scheduling & Capacity", url: "/scheduling", icon: CalendarDays },
-  { title: "Reports & Compliance", url: "/reports", icon: ClipboardCheck },
-  { title: "Inventory", url: "/inventory", icon: Package },
-];
-
-export const execution = [
-  { title: "Work Orders", url: "/work-orders", icon: ClipboardList },
-  { title: "Operator Console", url: "/execution", icon: PlayCircle },
-  { title: "Operator App (mobile)", url: "/mobile", icon: PlayCircle },
-  { title: "HMI Runtime", url: "/hmi", icon: MonitorCog },
-  { title: "Operator Apps", url: "/operator", icon: HardHat },
-  { title: "Step Templates", url: "/step-templates", icon: ListChecks },
-  { title: "Product Tracking", url: "/tracking", icon: ScanLine },
-  { title: "Genealogy", url: "/genealogy", icon: GitBranch },
-  { title: "Work in Progress", url: "/wip", icon: Boxes },
-  { title: "Material Lots", url: "/material-lots", icon: Boxes },
-  { title: "Recall Report", url: "/recall", icon: AlertOctagon },
-  { title: "Rework Tasks", url: "/rework", icon: GitBranch },
-  { title: "Work Instructions", url: "/work-instructions", icon: ListChecks },
-  { title: "Approvals & Signatures", url: "/approvals", icon: ShieldCheck },
-  { title: "Tools", url: "/tools", icon: Settings },
-];
-
-export const monitoring = [
-  { title: "Andon / Downtime", url: "/downtime", icon: AlertOctagon },
-  { title: "Plant Analytics", url: "/analytics", icon: Activity },
-  { title: "Telemetry", url: "/telemetry", icon: Activity },
-  { title: "Quality Holds", url: "/quality", icon: ShieldCheck },
-  { title: "Inspection Plans", url: "/inspection-plans", icon: ListChecks },
-  { title: "Nonconformance", url: "/nonconformance", icon: AlertOctagon },
-  { title: "Routing Rules", url: "/routing-rules", icon: GitBranch },
-  { title: "Waste Reasons", url: "/waste-reasons", icon: Trash2 },
+  { title: "Planner", url: "/planner", icon: CalendarDays },
 ];
 
 export const workforce = [
-  { title: "Users", url: "/users", icon: Users },
-  { title: "Assignments", url: "/assignments", icon: UserCog },
-  { title: "Skills & Certifications", url: "/skills", icon: ListChecks },
   { title: "Shifts", url: "/shifts", icon: CalendarDays },
+  { title: "Assignments", url: "/assignments", icon: UserCog },
 ];
 
-export const platform = [
-  { title: "Master Data", url: "/master-data", icon: Boxes },
-  { title: "ERP Contract", url: "/erp-contract", icon: Boxes },
-  { title: "Machines", url: "/machines", icon: Activity },
-  { title: "Maintenance & QA Portals", url: "/integrations", icon: Radio },
-  { title: "Integration Health", url: "/integration-health", icon: Activity },
-  { title: "Traceability", url: "/traceability", icon: Activity },
-  { title: "Audit Log", url: "/audit", icon: History },
-  { title: "People & Access", url: "/access", icon: ShieldCheck },
-  { title: "Roles & Permissions", url: "/roles", icon: UserCog },
-  { title: "Admin Activity", url: "/admin-log", icon: History },
-  { title: "Notifications", url: "/notifications", icon: Radio },
-  { title: "Settings", url: "/settings", icon: Settings },
-  { title: "Technical Documentation", url: "/documentation", icon: BookOpen },
-
-];
+export const planning: typeof overview = [];
+export const execution: typeof overview = [];
+export const monitoring: typeof overview = [];
+export const platform: typeof overview = [];
 
 export function AppSidebar() {
   const path = useRouterState({ select: (r) => r.location.pathname });
@@ -151,20 +96,16 @@ export function AppSidebar() {
             <Factory className="h-5 w-5" />
           </div>
           <div className="flex min-w-0 flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold tracking-tight">Cortanex MES</span>
+            <span className="text-sm font-semibold tracking-tight">Cortanex PMS</span>
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              Shop Floor · v1.0
+              Production Management
             </span>
           </div>
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-2">
-        {renderGroup("Overview", overview)}
-        {renderGroup("Planning", planning)}
-        {renderGroup("Execution", execution)}
-        {renderGroup("Monitoring", monitoring)}
-        {renderGroup("Workforce", workforce)}
-        {renderGroup("Platform", platform)}
+        {renderGroup("Production schedule", overview)}
+        {renderGroup("Shifts & crew", workforce)}
       </SidebarContent>
       <SidebarFooter className="p-3">
         <div className="rounded-xl border border-border/60 bg-card/60 p-3 group-data-[collapsible=icon]:hidden">

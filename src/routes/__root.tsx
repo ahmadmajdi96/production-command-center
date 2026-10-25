@@ -66,7 +66,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cortanex MES — Manufacturing Execution" },
+      { title: "Cortanex PMS — Production Management System" },
       { name: "description", content: "Real-time shop-floor execution, OEE, genealogy, andon and quality holds for food manufacturing." },
     ],
     links: [
