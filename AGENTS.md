@@ -8,3 +8,8 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## PMS rules
+- PMS is a subset of MES Command Center (shifts, scheduling, planner, assignments) copied verbatim; reuse MES code rather than rewriting so both stay in sync.
+- PMS has no backend of its own: it talks to the MES Lovable Cloud backend via publishable URL/key in `src/integrations/supabase/mes-backend.ts`. Never add migrations here; schema changes belong in the MES project.
+- Links to MES-only records render via `MesRef` (plain text) because those pages don't exist in PMS.
