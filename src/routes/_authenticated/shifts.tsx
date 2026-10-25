@@ -13,9 +13,9 @@ import { exportRows } from "@/components/list-controls";
 export const Route = createFileRoute("/_authenticated/shifts")({
   head: () => ({
     meta: [
-      { title: "Shift Management · Cortanex MES" },
+      { title: "Shift Management · Cortanex PMS" },
       { name: "description", content: "Plan shifts and rosters, check staffing coverage by role, and see live crew and shift performance." },
-      { property: "og:title", content: "Shift Management · Cortanex MES" },
+      { property: "og:title", content: "Shift Management · Cortanex PMS" },
       { property: "og:description", content: "Visual shift planner linked to users, roles, assignments and downtime." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -88,7 +88,7 @@ function ShiftsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex items-center gap-3">
-          <MesRef to="/users" className="grid h-9 w-9 place-items-center rounded-lg border border-border/60 bg-card/60 hover:border-primary/50" aria-label="Back to users"><ArrowLeft className="h-4 w-4" /></MesRef>
+          <Link to="/users" className="grid h-9 w-9 place-items-center rounded-lg border border-border/60 bg-card/60 hover:border-primary/50" aria-label="Back to users"><ArrowLeft className="h-4 w-4" /></Link>
           <div>
             <h1 className="font-display text-2xl font-semibold tracking-tight">Shift Management</h1>
             <p className="text-sm text-muted-foreground">{sh.shifts.length} shifts · {store.users.length} people · now: {current ? `${current.code} · ${current.name}` : "no shift"}</p>
@@ -168,7 +168,7 @@ function ShiftsPage() {
                 return (
                   <tr key={u.id} className="border-t border-border/40">
                     <td className="px-3 py-1.5">
-                      <MesRef to="/users/$userId" params={{ userId: u.id }} className="font-medium hover:text-primary">{u.name}</MesRef>
+                      <Link to="/users/$userId" params={{ userId: u.id }} className="font-medium hover:text-primary">{u.name}</Link>
                       <div className="text-[10px] text-muted-foreground">{ROLE_LABEL[u.role]} · {u.skills ?? ""}</div>
                     </td>
                     <td className="px-3 py-1.5">
@@ -252,10 +252,10 @@ function ShiftsPage() {
             {onNow.map((u) => {
               const asg = store.assignments.filter((a) => a.userId === u.id && a.active);
               return (
-                <MesRef key={u.id} to="/users/$userId" params={{ userId: u.id }} className="flex items-center justify-between rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-xs hover:border-primary/50">
+                <Link key={u.id} to="/users/$userId" params={{ userId: u.id }} className="flex items-center justify-between rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-xs hover:border-primary/50">
                   <span><span className="font-medium">{u.name}</span> <span className="text-muted-foreground">· {ROLE_LABEL[u.role]}</span></span>
                   <span className="flex items-center gap-2 text-muted-foreground">{asg.map((a) => a.targetId).join(", ") || "unassigned"}<StatusPill status={u.status === "active" ? "active" : u.status === "on-break" ? "paused" : "idle"} /></span>
-                </MesRef>
+                </Link>
               );
             })}
           </div>

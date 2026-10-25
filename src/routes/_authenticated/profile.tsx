@@ -9,10 +9,10 @@ import { SetMyPin } from "@/components/operator-switch";
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
-      { title: "My profile · Cortanex MES" },
-      { name: "description", content: "Manage your Cortanex MES account details, contact information and password." },
-      { property: "og:title", content: "My profile · Cortanex MES" },
-      { property: "og:description", content: "Manage your MES account details and password." },
+      { title: "My profile · Cortanex PMS" },
+      { name: "description", content: "Manage your Cortanex PMS account details, contact information and password." },
+      { property: "og:title", content: "My profile · Cortanex PMS" },
+      { property: "og:description", content: "Manage your PMS account details and password." },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary" },
     ],

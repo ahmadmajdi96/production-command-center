@@ -14,10 +14,21 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAssignmentsRouteImport } from './routes/_authenticated/assignments'
+import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated/planner'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedRecipesRouteImport } from './routes/_authenticated/recipes'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedSchedulingRouteImport } from './routes/_authenticated/scheduling'
 import { Route as AuthenticatedShiftsRouteImport } from './routes/_authenticated/shifts'
+import { Route as AuthenticatedProductionOrdersIndexRouteImport } from './routes/_authenticated/production-orders.index'
+import { Route as AuthenticatedProductionOrdersPoIdRouteImport } from './routes/_authenticated/production-orders.$poId'
+import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products.index'
+import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated/products.$productId'
+import { Route as AuthenticatedSkillsIndexRouteImport } from './routes/_authenticated/skills.index'
+import { Route as AuthenticatedSkillsSkillIdRouteImport } from './routes/_authenticated/skills.$skillId'
+import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users.index'
+import { Route as AuthenticatedUsersUserIdRouteImport } from './routes/_authenticated/users.$userId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -44,6 +55,11 @@ const AuthenticatedAssignmentsRoute =
     path: '/assignments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
   id: '/planner',
   path: '/planner',
@@ -52,6 +68,16 @@ const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRecipesRoute = AuthenticatedRecipesRouteImport.update({
+  id: '/recipes',
+  path: '/recipes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSchedulingRoute = AuthenticatedSchedulingRouteImport.update({
@@ -64,26 +90,95 @@ const AuthenticatedShiftsRoute = AuthenticatedShiftsRouteImport.update({
   path: '/shifts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProductionOrdersIndexRoute =
+  AuthenticatedProductionOrdersIndexRouteImport.update({
+    id: '/production-orders/',
+    path: '/production-orders/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionOrdersPoIdRoute =
+  AuthenticatedProductionOrdersPoIdRouteImport.update({
+    id: '/production-orders/$poId',
+    path: '/production-orders/$poId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductsIndexRoute =
+  AuthenticatedProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductsProductIdRoute =
+  AuthenticatedProductsProductIdRouteImport.update({
+    id: '/products/$productId',
+    path: '/products/$productId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSkillsIndexRoute =
+  AuthenticatedSkillsIndexRouteImport.update({
+    id: '/skills/',
+    path: '/skills/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSkillsSkillIdRoute =
+  AuthenticatedSkillsSkillIdRouteImport.update({
+    id: '/skills/$skillId',
+    path: '/skills/$skillId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUsersUserIdRoute =
+  AuthenticatedUsersUserIdRouteImport.update({
+    id: '/users/$userId',
+    path: '/users/$userId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/assignments': typeof AuthenticatedAssignmentsRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/recipes': typeof AuthenticatedRecipesRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
   '/shifts': typeof AuthenticatedShiftsRoute
+  '/production-orders/$poId': typeof AuthenticatedProductionOrdersPoIdRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRoute
+  '/skills/$skillId': typeof AuthenticatedSkillsSkillIdRoute
+  '/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/production-orders/': typeof AuthenticatedProductionOrdersIndexRoute
+  '/products/': typeof AuthenticatedProductsIndexRoute
+  '/skills/': typeof AuthenticatedSkillsIndexRoute
+  '/users/': typeof AuthenticatedUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/assignments': typeof AuthenticatedAssignmentsRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/recipes': typeof AuthenticatedRecipesRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
   '/shifts': typeof AuthenticatedShiftsRoute
   '/': typeof AuthenticatedIndexRoute
+  '/production-orders/$poId': typeof AuthenticatedProductionOrdersPoIdRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRoute
+  '/skills/$skillId': typeof AuthenticatedSkillsSkillIdRoute
+  '/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/production-orders': typeof AuthenticatedProductionOrdersIndexRoute
+  '/products': typeof AuthenticatedProductsIndexRoute
+  '/skills': typeof AuthenticatedSkillsIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -91,11 +186,22 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/assignments': typeof AuthenticatedAssignmentsRoute
+  '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/recipes': typeof AuthenticatedRecipesRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/scheduling': typeof AuthenticatedSchedulingRoute
   '/_authenticated/shifts': typeof AuthenticatedShiftsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/production-orders/$poId': typeof AuthenticatedProductionOrdersPoIdRoute
+  '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
+  '/_authenticated/skills/$skillId': typeof AuthenticatedSkillsSkillIdRoute
+  '/_authenticated/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/_authenticated/production-orders/': typeof AuthenticatedProductionOrdersIndexRoute
+  '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
+  '/_authenticated/skills/': typeof AuthenticatedSkillsIndexRoute
+  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,31 +210,64 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/assignments'
+    | '/inventory'
     | '/planner'
     | '/profile'
+    | '/recipes'
+    | '/reports'
     | '/scheduling'
     | '/shifts'
+    | '/production-orders/$poId'
+    | '/products/$productId'
+    | '/skills/$skillId'
+    | '/users/$userId'
+    | '/production-orders/'
+    | '/products/'
+    | '/skills/'
+    | '/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/reset-password'
     | '/assignments'
+    | '/inventory'
     | '/planner'
     | '/profile'
+    | '/recipes'
+    | '/reports'
     | '/scheduling'
     | '/shifts'
     | '/'
+    | '/production-orders/$poId'
+    | '/products/$productId'
+    | '/skills/$skillId'
+    | '/users/$userId'
+    | '/production-orders'
+    | '/products'
+    | '/skills'
+    | '/users'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
     | '/_authenticated/assignments'
+    | '/_authenticated/inventory'
     | '/_authenticated/planner'
     | '/_authenticated/profile'
+    | '/_authenticated/recipes'
+    | '/_authenticated/reports'
     | '/_authenticated/scheduling'
     | '/_authenticated/shifts'
     | '/_authenticated/'
+    | '/_authenticated/production-orders/$poId'
+    | '/_authenticated/products/$productId'
+    | '/_authenticated/skills/$skillId'
+    | '/_authenticated/users/$userId'
+    | '/_authenticated/production-orders/'
+    | '/_authenticated/products/'
+    | '/_authenticated/skills/'
+    | '/_authenticated/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -174,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssignmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/planner': {
       id: '/_authenticated/planner'
       path: '/planner'
@@ -186,6 +332,20 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recipes': {
+      id: '/_authenticated/recipes'
+      path: '/recipes'
+      fullPath: '/recipes'
+      preLoaderRoute: typeof AuthenticatedRecipesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/scheduling': {
@@ -202,25 +362,105 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShiftsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/production-orders/': {
+      id: '/_authenticated/production-orders/'
+      path: '/production-orders'
+      fullPath: '/production-orders/'
+      preLoaderRoute: typeof AuthenticatedProductionOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/production-orders/$poId': {
+      id: '/_authenticated/production-orders/$poId'
+      path: '/production-orders/$poId'
+      fullPath: '/production-orders/$poId'
+      preLoaderRoute: typeof AuthenticatedProductionOrdersPoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/products/': {
+      id: '/_authenticated/products/'
+      path: '/products'
+      fullPath: '/products/'
+      preLoaderRoute: typeof AuthenticatedProductsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/products/$productId': {
+      id: '/_authenticated/products/$productId'
+      path: '/products/$productId'
+      fullPath: '/products/$productId'
+      preLoaderRoute: typeof AuthenticatedProductsProductIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/skills/': {
+      id: '/_authenticated/skills/'
+      path: '/skills'
+      fullPath: '/skills/'
+      preLoaderRoute: typeof AuthenticatedSkillsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/skills/$skillId': {
+      id: '/_authenticated/skills/$skillId'
+      path: '/skills/$skillId'
+      fullPath: '/skills/$skillId'
+      preLoaderRoute: typeof AuthenticatedSkillsSkillIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/users/': {
+      id: '/_authenticated/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/users/$userId': {
+      id: '/_authenticated/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof AuthenticatedUsersUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssignmentsRoute: typeof AuthenticatedAssignmentsRoute
+  AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedRecipesRoute: typeof AuthenticatedRecipesRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSchedulingRoute: typeof AuthenticatedSchedulingRoute
   AuthenticatedShiftsRoute: typeof AuthenticatedShiftsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedProductionOrdersPoIdRoute: typeof AuthenticatedProductionOrdersPoIdRoute
+  AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRoute
+  AuthenticatedSkillsSkillIdRoute: typeof AuthenticatedSkillsSkillIdRoute
+  AuthenticatedUsersUserIdRoute: typeof AuthenticatedUsersUserIdRoute
+  AuthenticatedProductionOrdersIndexRoute: typeof AuthenticatedProductionOrdersIndexRoute
+  AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
+  AuthenticatedSkillsIndexRoute: typeof AuthenticatedSkillsIndexRoute
+  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAssignmentsRoute: AuthenticatedAssignmentsRoute,
+  AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedRecipesRoute: AuthenticatedRecipesRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSchedulingRoute: AuthenticatedSchedulingRoute,
   AuthenticatedShiftsRoute: AuthenticatedShiftsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedProductionOrdersPoIdRoute:
+    AuthenticatedProductionOrdersPoIdRoute,
+  AuthenticatedProductsProductIdRoute: AuthenticatedProductsProductIdRoute,
+  AuthenticatedSkillsSkillIdRoute: AuthenticatedSkillsSkillIdRoute,
+  AuthenticatedUsersUserIdRoute: AuthenticatedUsersUserIdRoute,
+  AuthenticatedProductionOrdersIndexRoute:
+    AuthenticatedProductionOrdersIndexRoute,
+  AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
+  AuthenticatedSkillsIndexRoute: AuthenticatedSkillsIndexRoute,
+  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

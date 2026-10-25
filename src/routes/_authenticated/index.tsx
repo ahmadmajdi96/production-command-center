@@ -10,6 +10,8 @@ export const Route = createFileRoute("/_authenticated/")({
       { name: "description", content: "Production schedules, capacity, shifts and crew assignments." },
       { property: "og:title", content: "Cortanex PMS — Production Management System" },
       { property: "og:description", content: "Production schedules, capacity, shifts and crew assignments." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

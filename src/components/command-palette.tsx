@@ -27,10 +27,8 @@ const PAGES = [
 
 const QUICK = [
   { label: "New production order", path: "/production-orders" },
-  { label: "Log downtime event", path: "/downtime" },
-  { label: "Request an approval", path: "/approvals" },
-  { label: "Assign a role", path: "/access" },
-  { label: "Create a role", path: "/roles" },
+  { label: "Plan shifts", path: "/shifts" },
+  { label: "Manage assignments", path: "/assignments" },
 ];
 
 type Src = {
@@ -73,7 +71,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
     setLoading(true);
     const t = setTimeout(async () => {
       const res = await Promise.all(
-        SOURCES.map(async (s) => {
+        SOURCES.filter((s) => ["production_orders", "products", "mes_users", "skills"].includes(s.table)).map(async (s) => {
           const { data } = await (supabase.from(s.table as any) as any)
             .select(s.cols)
             .or(s.search.map((c) => `${c}.ilike.%${q}%`).join(","))

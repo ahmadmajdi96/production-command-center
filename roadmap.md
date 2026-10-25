@@ -1,0 +1,4 @@
+- [x] Copy the complete MES Planning and Workforce sections and their supporting pages into PMS.
+- [x] Update PMS navigation and retain shared MES backend access.
+- [x] Verify section coverage, shared-backend tests, and protected entry for all eleven pages.
+- [ ] Verify signed-in MES data and editing flows — blocked by the absence of an MES account session in this external shared-backend project.
