@@ -11,8 +11,12 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/assignments")({
   head: () => ({
     meta: [
-      { title: "Assignments · Cortanex MES" },
+      { title: "Assignments · Cortanex PMS" },
       { name: "description", content: "Dynamically assign users to stations or teams." },
+      { property: "og:title", content: "Assignments · Cortanex PMS" },
+      { property: "og:description", content: "Dynamically assign users to stations or teams." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AssignmentsPage,

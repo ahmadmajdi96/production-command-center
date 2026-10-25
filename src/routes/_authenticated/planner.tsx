@@ -14,9 +14,9 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({
     meta: [
-      { title: "Production Planner · Cortanex MES" },
+      { title: "Production Planner · Cortanex PMS" },
       { name: "description", content: "Day-timeline calendar for scheduling production batches across lines." },
-      { property: "og:title", content: "Production Planner · Cortanex MES" },
+      { property: "og:title", content: "Production Planner · Cortanex PMS" },
       { property: "og:description", content: "Schedule production batches on lines across a day timeline." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
