@@ -1,3 +1,4 @@
+import { MesRef } from "@/components/mes-ref";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, CalendarDays, Layers, Trash2, Undo2 } from "lucide-react";
@@ -193,13 +194,13 @@ function Planner() {
                           style={{ left: box.left, width: box.width, top: 6 + lane * LANE_PX }}
                           title={`${b.number} · ${b.product_name}`}
                         >
-                          <Link to="/batches/$batchId" params={{ batchId: b.id }} className="block h-full overflow-hidden p-2 pr-14 text-left hover:brightness-110">
+                          <MesRef to="/batches/$batchId" params={{ batchId: b.id }} className="block h-full overflow-hidden p-2 pr-14 text-left hover:brightness-110">
                             <div className="truncate font-mono text-[10px] opacity-80">{b.number}</div>
                             <div className="truncate text-xs font-semibold">{b.product_name}</div>
                             <div className="truncate font-mono text-[10px] opacity-80">
                               {new Date(b.planned_start!).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} → {new Date(b.planned_end!).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {pct}%
                             </div>
-                          </Link>
+                          </MesRef>
                           <div className="absolute right-1 top-1 flex gap-1">
                             {b.status !== "running" && b.status !== "completed" && (
                               <button type="button" onClick={() => unschedule(b)} aria-label={`Unschedule ${b.number}`} title="Move back to unscheduled"

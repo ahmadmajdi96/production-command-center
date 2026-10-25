@@ -1,3 +1,4 @@
+import { MesRef } from "@/components/mes-ref";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -49,7 +50,7 @@ export function StepQuality({ op, locked }: { op: any; locked: boolean }) {
           <div key={p.id} className="space-y-1">
             <div className="flex flex-wrap items-center gap-1.5">
               <ClipboardCheck className="h-3.5 w-3.5 text-primary" />
-              <Link to="/inspection-plans/$planId" params={{ planId: p.id }} className="font-medium hover:text-primary">{p.name}</Link>
+              <MesRef to="/inspection-plans/$planId" params={{ planId: p.id }} className="font-medium hover:text-primary">{p.name}</MesRef>
               <span className={p.recorded >= p.required ? "text-success" : "text-warning"}>{p.recorded} / {p.required} sample(s)</span>
               <span className="text-muted-foreground">· {p.sampling === "every_qty" ? `every ${p.sample_every}` : "once per step"} · {p.performed_by === "qa_portal" ? "done by QA portal" : "recorded here"}</span>
             </div>
@@ -83,7 +84,7 @@ export function StepQuality({ op, locked }: { op: any; locked: boolean }) {
       {data.nonconformances.map((n: any) => (
         <div key={n.id} className="flex flex-wrap items-center gap-1.5">
           <AlertTriangle className="h-3.5 w-3.5 text-warning" />
-          <Link to="/nonconformance/$ncId" params={{ ncId: n.id }} className="font-mono text-primary">{n.id}</Link>
+          <MesRef to="/nonconformance/$ncId" params={{ ncId: n.id }} className="font-mono text-primary">{n.id}</MesRef>
           <span>{n.description}</span>
           <span className={n.status === "open" ? "text-warning" : "text-success"}>{n.status === "open" ? "waiting for QA decision" : `QA: ${String(n.decision).replace(/_/g, " ")}`}</span>
         </div>

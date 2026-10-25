@@ -1,3 +1,4 @@
+import { MesRef } from "@/components/mes-ref";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, CheckCheck } from "lucide-react";
@@ -64,13 +65,13 @@ export function NotificationBell({ userId }: { userId: string }) {
             </button>
           ))}
         </div>
-        <Link
+        <MesRef
           to="/notifications"
           onClick={() => setOpen(false)}
           className="block border-t border-border/60 px-3 py-2 text-center text-xs text-primary hover:underline"
         >
           View all notifications & preferences
-        </Link>
+        </MesRef>
       </PopoverContent>
     </Popover>
   );
