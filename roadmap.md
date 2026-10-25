@@ -1,0 +1,3 @@
+- [ ] Copy the complete MES Planning and Workforce sections and their supporting pages into PMS.
+- [ ] Update PMS navigation and retain shared MES backend access.
+- [ ] Verify copied pages and available flows; identify any account-access limitation.
