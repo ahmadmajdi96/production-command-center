@@ -1,3 +1,4 @@
+import "@/integrations/supabase/mes-backend";
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";

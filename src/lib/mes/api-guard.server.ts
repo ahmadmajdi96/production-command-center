@@ -1,3 +1,4 @@
+import "@/integrations/supabase/mes-backend";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
