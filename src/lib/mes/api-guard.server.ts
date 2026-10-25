@@ -92,9 +92,12 @@ export async function requireApiKey(request: Request): Promise<Response | null> 
 
 
 export function serviceClient() {
+  const url = process.env['SUPABASE_URL'];
+  const key = process.env['MES_SERVICE_ROLE_KEY'] ?? process.env['SUPABASE_SERVICE_ROLE_KEY'];
+  if (!url || !key) throw new Error("The existing MES connection is not configured. Add the MES service-role key securely in PMS settings.");
   return createClient<Database>(
-    process.env['SUPABASE_URL']!,
-    process.env['SUPABASE_SERVICE_ROLE_KEY']!,
+    url,
+    key,
     { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
   );
 }
