@@ -10,9 +10,9 @@ import { inp, btn, ghost } from "@/components/qp-ui";
 export const Route = createFileRoute("/_authenticated/scheduling")({
   head: () => ({
     meta: [
-      { title: "Scheduling & Capacity · Cortanex MES" },
+      { title: "Scheduling & Capacity · Cortanex PMS" },
       { name: "description", content: "Which orders run on which lines and machines, with shift-based capacity, changeovers and auto-scheduling." },
-      { property: "og:title", content: "Scheduling & Capacity · Cortanex MES" },
+      { property: "og:title", content: "Scheduling & Capacity · Cortanex PMS" },
       { property: "og:description", content: "Order schedule per line with shift capacity, changeover times and conflicts." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -170,11 +170,11 @@ function SchedulingPage() {
             </div>
             <div className="relative h-12 flex-1 rounded-lg border border-border/40 bg-background/30">
               {mine.map(({ o, s, e }) => (
-                <MesRef key={o.id} to="/production-orders/$poId" params={{ poId: o.id }} title={`${o.id} · ${o.product_name} · ${o.qty} ${o.uom}\n${new Date(s).toLocaleString()} → ${new Date(e).toLocaleString()}`}
+                <Link key={o.id} to="/production-orders/$poId" params={{ poId: o.id }} title={`${o.id} · ${o.product_name} · ${o.qty} ${o.uom}\n${new Date(s).toLocaleString()} → ${new Date(e).toLocaleString()}`}
                   className={`absolute top-1 bottom-1 overflow-hidden rounded-md border px-1 text-[10px] leading-tight ${conflicts.has(o.id) ? "border-destructive bg-destructive/20" : o.status === "running" ? "border-success/50 bg-success/20" : "border-primary/40 bg-primary/15"}`}
                   style={{ left: pos(s), width: `calc(${pos(e)} - ${pos(s)})`, minWidth: 6 }}>
                   <div className="truncate font-mono">{o.id}</div><div className="truncate text-muted-foreground">{o.product_name}</div>
-                </MesRef>
+                </Link>
               ))}
             </div>
           </div>
@@ -188,7 +188,7 @@ function SchedulingPage() {
           <table className="w-full text-xs"><thead className="text-[10px] uppercase text-muted-foreground"><tr><th className="py-1 text-left">Order</th><th className="text-left">Line</th><th className="text-left">Start</th><th className="pr-3 text-right">Work (h)</th><th className="text-left">Steps / machine</th></tr></thead>
             <tbody>{planned.map((o) => (
               <tr key={o.id} className="border-t border-border/40 align-top">
-                <td className="py-1.5"><MesRef to="/production-orders/$poId" params={{ poId: o.id }} className="font-mono text-primary">{o.id}</MesRef><div className="text-muted-foreground">{o.status}</div></td>
+                <td className="py-1.5"><Link to="/production-orders/$poId" params={{ poId: o.id }} className="font-mono text-primary">{o.id}</Link><div className="text-muted-foreground">{o.status}</div></td>
                 <td>{o.line_id ?? "—"}</td><td>{o.planned_start ? new Date(o.planned_start).toLocaleString() : "—"}</td><td className="pr-3 text-right">{(opMin(o) / 60).toFixed(1)}</td>
                 <td>{ops.filter((p) => p.production_order_id === o.id).map((p) => <div key={p.id}>{p.sequence}. {p.name} <span className="text-muted-foreground">{p.machine_id ?? p.station_id ?? p.work_center_id ?? ""}</span></div>)}</td>
               </tr>))}</tbody></table>
@@ -196,7 +196,7 @@ function SchedulingPage() {
         <div className="space-y-4">
           <div className="glass-panel rounded-2xl p-4">
             <h2 className="mb-2 text-sm font-semibold">Needs a line or start date ({unscheduled.length})</h2>
-            {unscheduled.map((o) => <div key={o.id} className="border-t border-border/40 py-1.5 text-xs"><MesRef to="/production-orders/$poId" params={{ poId: o.id }} className="font-mono text-primary">{o.id}</MesRef> · {o.product_name} · {o.qty} {o.uom} · {!o.line_id ? "no line" : "no start date"}</div>)}
+            {unscheduled.map((o) => <div key={o.id} className="border-t border-border/40 py-1.5 text-xs"><Link to="/production-orders/$poId" params={{ poId: o.id }} className="font-mono text-primary">{o.id}</Link> · {o.product_name} · {o.qty} {o.uom} · {!o.line_id ? "no line" : "no start date"}</div>)}
             {unscheduled.length === 0 && <p className="text-xs text-muted-foreground">All open orders are scheduled.</p>}
           </div>
           <div className="glass-panel rounded-2xl p-4">
