@@ -1,14 +1,16 @@
-# Welcome to your Lovable project
+# Production Command Center
+
+I want you to access this project @project:da076c3c-32ff-43f2-9256-65146d2d1f5f:"MES Command Center" and copy all the pages, features and function related to shifts and scheduling and build a system called PMS production management system, this system manage shifts and production schedules dont build anything from scratch and use everything from the mes system and also use the same backend of the mes
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f24aecb3-3122-4000-9a34-14abdc97c259).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +22,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
