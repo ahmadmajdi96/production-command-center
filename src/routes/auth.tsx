@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { signInWithLockout } from "@/lib/mes/auth.functions";
 import { PASSWORD_RULES, passwordOk } from "@/lib/password-rules";
-import { Factory, Loader2, Lock, Mail, User as UserIcon } from "lucide-react";
+import { Loader2, Lock, Mail, User as UserIcon } from "lucide-react";
+import { ApsThemeToggle } from "@/components/aps/appearance";
+import { ManuQubeEmblem, PlannerWelcome } from "@/components/aps/planner-persona";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -81,18 +83,16 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen place-items-center bg-background px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-primary to-info text-primary-foreground shadow-[var(--shadow-glow)]">
-            <Factory className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="font-display text-xl font-semibold tracking-tight">Cortanex APS</h1>
-            <p className="text-xs text-muted-foreground">Advanced Planning & Scheduling</p>
-          </div>
-        </div>
-
+      <div className="grid w-full max-w-md gap-5 lg:max-w-4xl lg:grid-cols-2 lg:items-center">
         <div className="glass-panel rounded-2xl p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <ManuQubeEmblem />
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl font-semibold tracking-tight">Cortanex APS</h1>
+              <p className="text-xs text-muted-foreground">Advanced Planning & Scheduling</p>
+            </div>
+            <ApsThemeToggle />
+          </div>
           <div className="mb-4 flex gap-1 rounded-lg border border-border/60 bg-background/40 p-1 text-xs">
             {(["signin", "signup"] as const).map((m) => (
               <button
@@ -190,6 +190,7 @@ function AuthPage() {
             5 wrong passwords lock the account for 15 minutes.
           </p>
         </div>
+        <PlannerWelcome />
       </div>
     </div>
   );

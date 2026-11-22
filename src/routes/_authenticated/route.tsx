@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, ChevronRight, LogOut, User as UserIcon, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CommandPalette } from "@/components/command-palette";
+import { ApsThemeToggle } from "@/components/aps/appearance";
 import { NotificationBell } from "@/components/notification-bell";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -89,16 +90,16 @@ function TopBar({
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/60 bg-background/70 px-4 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border/60 bg-background/70 px-2 backdrop-blur-xl sm:gap-3 sm:px-4">
       <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-      <div className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex">
+      <div className="hidden items-center gap-1.5 text-xs text-muted-foreground lg:flex">
         <span>Riyadh HQ</span>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">Plant 01</span>
         <ChevronRight className="h-3 w-3" />
         <span>Shift A · 06:00 → 14:00</span>
       </div>
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
         <button
           onClick={() => setSearchOpen(true)}
           aria-label="Search everything"
@@ -114,6 +115,7 @@ function TopBar({
           mesAvailable={mesAvailable}
           apsAccess={apsAccess}
         />
+        <ApsThemeToggle />
         {mesAvailable ? (
           <>
             <NotificationBell userId={user.id} />

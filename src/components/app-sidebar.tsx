@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { ManuQubeEmblem, PlannerPresence } from "@/components/aps/planner-persona";
 import { can, type MyAccess as ApsAccess, type ResourceKey } from "@/lib/aps/resources";
 import {
   LayoutDashboard,
@@ -128,9 +129,7 @@ export function AppSidebar({
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="p-4">
         <Link to={mesAvailable ? "/" : (apsPages[0]?.url ?? "/aps")} className="flex items-center gap-2.5">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-info text-primary-foreground shadow-[var(--shadow-glow)]">
-            <Factory className="h-5 w-5" />
-          </div>
+          <ManuQubeEmblem />
           <div className="flex min-w-0 flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-semibold tracking-tight">Cortanex APS</span>
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -140,20 +139,12 @@ export function AppSidebar({
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-2">
-        {mesAvailable && renderGroup("Planning", planning)}
         {apsPages.length > 0 && renderGroup("Advanced planning", apsPages)}
+        {mesAvailable && renderGroup("Planning", planning)}
         {mesAvailable && renderGroup("Workforce", workforce)}
       </SidebarContent>
       <SidebarFooter className="p-3">
-        <div className="rounded-xl border border-border/60 bg-card/60 p-3 group-data-[collapsible=icon]:hidden">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="status-dot animate-pulse-glow text-success" />
-            <span className="font-medium">{mesAvailable ? "Edge gateway online" : "APS access verified"}</span>
-          </div>
-          <p className="mt-1 text-[10px] text-muted-foreground">
-            {mesAvailable ? "6 plants · 24 lines streaming" : "Command Access Hub"}
-          </p>
-        </div>
+        <PlannerPresence />
       </SidebarFooter>
     </Sidebar>
   );

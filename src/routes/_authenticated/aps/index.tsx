@@ -1,3 +1,4 @@
+import { PlannerBanner } from "@/components/aps/planner-persona";
 import { needsQueryStatus, QueryStatus } from "@/components/aps/kit";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LayoutDashboard } from "lucide-react";
@@ -47,6 +48,7 @@ function Dashboard() {
         title="Planning Overview"
         desc="Live view calculated from current orders, materials, machines, workforce and rules."
       />
+      <PlannerBanner />
       {planStatus?.approved && planStatus.reasons.length > 0 && (
         <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
           <div className="font-medium">
