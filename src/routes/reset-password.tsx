@@ -8,10 +8,10 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Set a new password · Cortanex PMS" },
-      { name: "description", content: "Choose a new password for your Cortanex PMS account." },
-      { property: "og:title", content: "Set a new password · Cortanex PMS" },
-      { property: "og:description", content: "Reset your Cortanex PMS password." },
+      { title: "Set a new password · Cortanex APS" },
+      { name: "description", content: "Choose a new password for your Cortanex APS account." },
+      { property: "og:title", content: "Set a new password · Cortanex APS" },
+      { property: "og:description", content: "Reset your Cortanex APS password." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

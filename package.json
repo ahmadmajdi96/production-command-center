@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test:contract": "vitest run tests/contract"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:contract": "vitest run src/lib/aps/mes-alignment.test.ts src/integrations/supabase/client.server.test.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.72",

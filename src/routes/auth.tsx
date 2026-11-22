@@ -10,10 +10,10 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Sign in · Cortanex PMS" },
-      { name: "description", content: "Sign in to Cortanex PMS to access shop-floor execution, OEE, traceability and quality holds." },
-      { property: "og:title", content: "Sign in · Cortanex PMS" },
-      { property: "og:description", content: "Secure access to Cortanex Production Management System." },
+      { title: "Sign in · Cortanex APS" },
+      { name: "description", content: "Sign in to Cortanex APS to access production planning, capacity, scheduling and workforce." },
+      { property: "og:title", content: "Sign in · Cortanex APS" },
+      { property: "og:description", content: "Secure access to Cortanex Advanced Planning & Scheduling." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -87,8 +87,8 @@ function AuthPage() {
             <Factory className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="font-display text-xl font-semibold tracking-tight">Cortanex PMS</h1>
-            <p className="text-xs text-muted-foreground">Production Management System</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight">Cortanex APS</h1>
+            <p className="text-xs text-muted-foreground">Advanced Planning & Scheduling</p>
           </div>
         </div>
 

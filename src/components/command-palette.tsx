@@ -10,7 +10,16 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
-import { overview, planning, execution, monitoring, workforce, platform } from "@/components/app-sidebar";
+import {
+  overview,
+  planning,
+  execution,
+  monitoring,
+  workforce,
+  platform,
+  visibleAdvancedPlanning,
+} from "@/components/app-sidebar";
+import type { MyAccess as ApsAccess } from "@/lib/aps/resources";
 import { Search as SearchIcon, Plus, ArrowRight } from "lucide-react";
 
 type Hit = { id: string; group: string; title: string; subtitle?: string; path: string };
@@ -56,7 +65,17 @@ const SOURCES: Src[] = [
   { group: "Skills", table: "skills", cols: "id,code,name", search: ["code", "name"], title: (r) => `${r.code} · ${r.name}`, path: (r) => `/skills/${r.id}` },
 ];
 
-export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+export function CommandPalette({
+  open,
+  onOpenChange,
+  mesAvailable,
+  apsAccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mesAvailable: boolean;
+  apsAccess?: ApsAccess;
+}) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<Hit[]>([]);
@@ -64,10 +83,12 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
 
   useEffect(() => {
     const q = query.trim().replace(/[%,()]/g, " ").trim();
-    if (!open || q.length < 2) {
+    if (!open || !mesAvailable || q.length < 2) {
       setHits([]);
+      setLoading(false);
       return;
     }
+    let active = true;
     setLoading(true);
     const t = setTimeout(async () => {
       const res = await Promise.all(
@@ -85,11 +106,16 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           }));
         }),
       );
-      setHits(res.flat());
-      setLoading(false);
+      if (active) {
+        setHits(res.flat());
+        setLoading(false);
+      }
     }, 200);
-    return () => clearTimeout(t);
-  }, [query, open]);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
+  }, [query, open, mesAvailable]);
 
   const grouped = useMemo(() => {
     const m: Record<string, Hit[]> = {};
@@ -98,7 +124,13 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
   }, [hits]);
 
   const ql = query.trim().toLowerCase();
-  const pages = ql ? PAGES.filter((p) => `${p.title} ${p.group}`.toLowerCase().includes(ql)).slice(0, 8) : PAGES.slice(0, 10);
+  const allowedPages = [
+    ...(mesAvailable ? PAGES : []),
+    ...visibleAdvancedPlanning(apsAccess).map((page) => ({ ...page, group: "Advanced planning" })),
+  ];
+  const pages = ql
+    ? allowedPages.filter((page) => `${page.title} ${page.group}`.toLowerCase().includes(ql)).slice(0, 8)
+    : allowedPages.slice(0, 10);
 
   const go = (path: string) => {
     onOpenChange(false);
@@ -109,12 +141,12 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput
-        placeholder="Search orders, lots, lines, stations, machines, people, pages…"
+        placeholder={mesAvailable ? "Search orders, products, people, skills, pages…" : "Search advanced planning pages…"}
         value={query}
         onValueChange={setQuery}
       />
       <CommandList className="max-h-[520px]">
-        {!ql && (
+        {!ql && mesAvailable && (
           <>
             <CommandGroup heading="Quick actions">
               {QUICK.map((a) => (
@@ -146,7 +178,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
         {ql.length >= 2 && !loading && hits.length === 0 && pages.length === 0 && (
           <CommandEmpty>No matches for “{query}”</CommandEmpty>
         )}
-        {Object.entries(grouped).map(([g, items]) => (
+        {mesAvailable && Object.entries(grouped).map(([g, items]) => (
           <CommandGroup key={g} heading={g}>
             {items.map((h) => (
               <CommandItem key={h.id} value={`${h.id} ${h.title} ${query}`} onSelect={() => go(h.path)}>

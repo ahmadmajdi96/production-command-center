@@ -6,9 +6,9 @@ export const Route = createFileRoute("/_authenticated/")({
   },
   head: () => ({
     meta: [
-      { title: "Cortanex PMS — Production Management System" },
+      { title: "Cortanex APS — Advanced Planning & Scheduling" },
       { name: "description", content: "Production schedules, capacity, shifts and crew assignments." },
-      { property: "og:title", content: "Cortanex PMS — Production Management System" },
+      { property: "og:title", content: "Cortanex APS — Advanced Planning & Scheduling" },
       { property: "og:description", content: "Production schedules, capacity, shifts and crew assignments." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

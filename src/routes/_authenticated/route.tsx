@@ -1,12 +1,14 @@
-import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, Outlet, Navigate, redirect, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, ChevronRight, LogOut, User as UserIcon, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CommandPalette } from "@/components/command-palette";
 import { NotificationBell } from "@/components/notification-bell";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar, visibleAdvancedPlanning } from "@/components/app-sidebar";
+import { useMyApsAccess } from "@/lib/aps/client";
+import type { MyAccess as ApsAccess } from "@/lib/aps/resources";
 import { getMyAccess } from "@/lib/mes/authz.functions";
 import { AccessProvider } from "@/lib/access";
 import { IdleSignout } from "@/components/idle-signout";
@@ -32,7 +34,13 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-function TopBar() {
+function TopBar({
+  mesAvailable,
+  apsAccess,
+}: {
+  mesAvailable: boolean;
+  apsAccess?: ApsAccess;
+}) {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -50,6 +58,7 @@ function TopBar() {
 
   const { data: profile } = useQuery({
     queryKey: ["my-profile", user.id],
+    enabled: mesAvailable,
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
@@ -62,14 +71,15 @@ function TopBar() {
 
   const { data: roles } = useQuery({
     queryKey: ["my-roles", user.id],
+    enabled: mesAvailable,
     queryFn: async () => {
       const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
       return (data ?? []).map((r) => r.role as string);
     },
   });
 
-  const name = profile?.full_name || user.email || "User";
-  const subtitle = profile?.job_title || roles?.[0] || "Member";
+  const name = profile?.full_name || apsAccess?.fullName || user.email || "User";
+  const subtitle = profile?.job_title || roles?.[0] || apsAccess?.roles[0] || "Member";
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -98,9 +108,16 @@ function TopBar() {
           <span className="hidden flex-1 text-left md:inline">Search everything…</span>
           <kbd className="hidden rounded border border-border/60 px-1.5 font-mono text-[10px] md:inline">Ctrl K</kbd>
         </button>
-        <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
-        <NotificationBell userId={user.id} />
-        <Link
+        <CommandPalette
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          mesAvailable={mesAvailable}
+          apsAccess={apsAccess}
+        />
+        {mesAvailable ? (
+          <>
+            <NotificationBell userId={user.id} />
+            <Link
           to="/profile"
           className="flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-2 py-1 transition hover:border-primary/50"
         >
@@ -116,7 +133,13 @@ function TopBar() {
             <div className="text-[10px] text-muted-foreground">{subtitle}</div>
           </div>
           <UserIcon className="h-3.5 w-3.5 text-muted-foreground sm:hidden" />
-        </Link>
+            </Link>
+          </>
+        ) : (
+          <div className="grid h-9 w-9 place-items-center rounded-lg border border-border/60 bg-card/60 text-xs" title={name} aria-label={name}>
+            {initials(name)}
+          </div>
+        )}
         <button
           onClick={handleSignOut}
           title="Sign out"
@@ -138,8 +161,7 @@ function NoAccess({ email }: { email?: string }) {
         <ShieldAlert className="mx-auto mb-4 h-8 w-8 text-warning" />
         <h1 className="font-display text-xl font-semibold">Access not yet assigned</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your account{email ? ` (${email})` : ""} is signed in but has no role for any site or line yet.
-          An administrator needs to assign one before you can see production data.
+          Your account{email ? ` (${email})` : ""} is signed in. Ask an administrator for a production role in MES or an APS role in the Command Access Hub.
         </p>
         <button
           onClick={async () => {
@@ -159,39 +181,76 @@ function NoAccess({ email }: { email?: string }) {
 
 function AuthedLayout() {
   const { user } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (router) => router.location.pathname });
   const { data: access, isLoading, error } = useQuery({
     queryKey: ["my-access", user.id],
     queryFn: () => getMyAccess(),
     staleTime: 60_000,
   });
 
-  if (isLoading) {
+  const aps = useMyApsAccess({ userId: user.id });
+  const mesAvailable = Boolean(
+    !error && access?.userId === user.id &&
+    (access.grants.length > 0 || access.permissions.includes("platform.admin")),
+  );
+  const signedInEmail = user.email?.trim().toLowerCase();
+  const apsAccess =
+    !aps.isError && signedInEmail && aps.data?.email.trim().toLowerCase() === signedInEmail
+      ? aps.data
+      : undefined;
+  const apsPage = visibleAdvancedPlanning(apsAccess)[0];
+  const apsPath = pathname === "/aps" || pathname.startsWith("/aps/");
+
+  if (!mesAvailable && !apsPage && (isLoading || aps.isPending)) {
     return (
       <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
         Checking your access…
       </div>
     );
   }
-  if (error || !access) {
-    return (
-      <div className="grid min-h-screen place-items-center p-6 text-center text-sm text-destructive">
-        Could not verify your access. Please reload the page.
-      </div>
-    );
-  }
-  if (access.grants.length === 0 && !access.permissions.includes("platform.admin")) {
+  if (!mesAvailable && !apsPage) {
+    if (error || aps.isError) {
+      return (
+        <div className="grid min-h-screen place-items-center p-6 text-center text-sm text-destructive">
+          Could not verify your access. Please reload the page.
+        </div>
+      );
+    }
     return <NoAccess email={user.email ?? undefined} />;
   }
+  if (!mesAvailable && !apsPath && (pathname === "/scheduling" || pathname === "/")) {
+    return <Navigate to={apsPage?.url ?? "/aps"} replace />;
+  }
+
+  const mesAccess = mesAvailable && access
+    ? access
+    : { userId: user.id, email: user.email ?? null, displayName: null, permissions: [], grants: [] };
 
   return (
-    <AccessProvider access={access}>
+    <AccessProvider access={mesAccess}>
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
-          <AppSidebar />
+          <AppSidebar mesAvailable={mesAvailable} apsAccess={apsAccess} />
           <div className="flex min-w-0 flex-1 flex-col">
-            <TopBar />
+            <TopBar mesAvailable={mesAvailable} apsAccess={apsAccess} />
             <main className="flex-1 p-4 sm:p-6">
-              <Outlet />
+              {mesAvailable || apsPath ? (
+                <Outlet />
+              ) : (
+                <section className="glass-panel mx-auto max-w-lg rounded-2xl p-6 text-center">
+                  <ShieldAlert className="mx-auto mb-3 h-7 w-7 text-warning" aria-hidden />
+                  <h1 className="font-display text-xl font-semibold">Production workspace access required</h1>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    An MES role is required to view production management and workforce pages.
+                  </p>
+                  <Link
+                    to={apsPage?.url ?? "/aps"}
+                    className="mt-4 inline-flex rounded-lg border border-border/60 bg-card/60 px-4 py-2 text-sm"
+                  >
+                    Open advanced planning
+                  </Link>
+                </section>
+              )}
             </main>
             <IdleSignout />
           </div>

@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedApsRouteRouteImport } from './routes/_authenticated/aps/route'
 import { Route as AuthenticatedAssignmentsRouteImport } from './routes/_authenticated/assignments'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated/planner'
@@ -21,6 +22,18 @@ import { Route as AuthenticatedRecipesRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedSchedulingRouteImport } from './routes/_authenticated/scheduling'
 import { Route as AuthenticatedShiftsRouteImport } from './routes/_authenticated/shifts'
+import { Route as AuthenticatedApsIndexRouteImport } from './routes/_authenticated/aps/index'
+import { Route as AuthenticatedApsApprovalsRouteImport } from './routes/_authenticated/aps/approvals'
+import { Route as AuthenticatedApsAuditRouteImport } from './routes/_authenticated/aps/audit'
+import { Route as AuthenticatedApsCapacityRouteImport } from './routes/_authenticated/aps/capacity'
+import { Route as AuthenticatedApsComplianceRouteImport } from './routes/_authenticated/aps/compliance'
+import { Route as AuthenticatedApsConflictsRouteImport } from './routes/_authenticated/aps/conflicts'
+import { Route as AuthenticatedApsIntegrationsRouteImport } from './routes/_authenticated/aps/integrations'
+import { Route as AuthenticatedApsOrdersRouteImport } from './routes/_authenticated/aps/orders'
+import { Route as AuthenticatedApsResourcesRouteImport } from './routes/_authenticated/aps/resources'
+import { Route as AuthenticatedApsRulesRouteImport } from './routes/_authenticated/aps/rules'
+import { Route as AuthenticatedApsScheduleRouteImport } from './routes/_authenticated/aps/schedule'
+import { Route as AuthenticatedApsVersionsRouteImport } from './routes/_authenticated/aps/versions'
 import { Route as AuthenticatedProductionOrdersIndexRouteImport } from './routes/_authenticated/production-orders.index'
 import { Route as AuthenticatedProductionOrdersPoIdRouteImport } from './routes/_authenticated/production-orders.$poId'
 import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products.index'
@@ -29,6 +42,8 @@ import { Route as AuthenticatedSkillsIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedSkillsSkillIdRouteImport } from './routes/_authenticated/skills.$skillId'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users.index'
 import { Route as AuthenticatedUsersUserIdRouteImport } from './routes/_authenticated/users.$userId'
+import { Route as ApiPublicIntegrationsSourceRouteImport } from './routes/api/public/integrations/$source'
+import { Route as ApiPublicScheduleApprovedRouteImport } from './routes/api/public/schedule/approved'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -47,6 +62,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedApsRouteRoute = AuthenticatedApsRouteRouteImport.update({
+  id: '/aps',
+  path: '/aps',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAssignmentsRoute =
@@ -90,6 +110,74 @@ const AuthenticatedShiftsRoute = AuthenticatedShiftsRouteImport.update({
   path: '/shifts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedApsIndexRoute = AuthenticatedApsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedApsRouteRoute,
+} as any)
+const AuthenticatedApsApprovalsRoute =
+  AuthenticatedApsApprovalsRouteImport.update({
+    id: '/approvals',
+    path: '/approvals',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsAuditRoute = AuthenticatedApsAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AuthenticatedApsRouteRoute,
+} as any)
+const AuthenticatedApsCapacityRoute =
+  AuthenticatedApsCapacityRouteImport.update({
+    id: '/capacity',
+    path: '/capacity',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsComplianceRoute =
+  AuthenticatedApsComplianceRouteImport.update({
+    id: '/compliance',
+    path: '/compliance',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsConflictsRoute =
+  AuthenticatedApsConflictsRouteImport.update({
+    id: '/conflicts',
+    path: '/conflicts',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsIntegrationsRoute =
+  AuthenticatedApsIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsOrdersRoute = AuthenticatedApsOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AuthenticatedApsRouteRoute,
+} as any)
+const AuthenticatedApsResourcesRoute =
+  AuthenticatedApsResourcesRouteImport.update({
+    id: '/resources',
+    path: '/resources',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsRulesRoute = AuthenticatedApsRulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => AuthenticatedApsRouteRoute,
+} as any)
+const AuthenticatedApsScheduleRoute =
+  AuthenticatedApsScheduleRouteImport.update({
+    id: '/schedule',
+    path: '/schedule',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
+const AuthenticatedApsVersionsRoute =
+  AuthenticatedApsVersionsRouteImport.update({
+    id: '/versions',
+    path: '/versions',
+    getParentRoute: () => AuthenticatedApsRouteRoute,
+  } as any)
 const AuthenticatedProductionOrdersIndexRoute =
   AuthenticatedProductionOrdersIndexRouteImport.update({
     id: '/production-orders/',
@@ -137,11 +225,24 @@ const AuthenticatedUsersUserIdRoute =
     path: '/users/$userId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicIntegrationsSourceRoute =
+  ApiPublicIntegrationsSourceRouteImport.update({
+    id: '/api/public/integrations/$source',
+    path: '/api/public/integrations/$source',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicScheduleApprovedRoute =
+  ApiPublicScheduleApprovedRouteImport.update({
+    id: '/api/public/schedule/approved',
+    path: '/api/public/schedule/approved',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/aps': typeof AuthenticatedApsRouteRouteWithChildren
   '/assignments': typeof AuthenticatedAssignmentsRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/planner': typeof AuthenticatedPlannerRoute
@@ -150,14 +251,28 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
   '/shifts': typeof AuthenticatedShiftsRoute
+  '/aps/approvals': typeof AuthenticatedApsApprovalsRoute
+  '/aps/audit': typeof AuthenticatedApsAuditRoute
+  '/aps/capacity': typeof AuthenticatedApsCapacityRoute
+  '/aps/compliance': typeof AuthenticatedApsComplianceRoute
+  '/aps/conflicts': typeof AuthenticatedApsConflictsRoute
+  '/aps/integrations': typeof AuthenticatedApsIntegrationsRoute
+  '/aps/orders': typeof AuthenticatedApsOrdersRoute
+  '/aps/resources': typeof AuthenticatedApsResourcesRoute
+  '/aps/rules': typeof AuthenticatedApsRulesRoute
+  '/aps/schedule': typeof AuthenticatedApsScheduleRoute
+  '/aps/versions': typeof AuthenticatedApsVersionsRoute
   '/production-orders/$poId': typeof AuthenticatedProductionOrdersPoIdRoute
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/skills/$skillId': typeof AuthenticatedSkillsSkillIdRoute
   '/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/aps/': typeof AuthenticatedApsIndexRoute
   '/production-orders/': typeof AuthenticatedProductionOrdersIndexRoute
   '/products/': typeof AuthenticatedProductsIndexRoute
   '/skills/': typeof AuthenticatedSkillsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/api/public/integrations/$source': typeof ApiPublicIntegrationsSourceRoute
+  '/api/public/schedule/approved': typeof ApiPublicScheduleApprovedRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -171,20 +286,35 @@ export interface FileRoutesByTo {
   '/scheduling': typeof AuthenticatedSchedulingRoute
   '/shifts': typeof AuthenticatedShiftsRoute
   '/': typeof AuthenticatedIndexRoute
+  '/aps/approvals': typeof AuthenticatedApsApprovalsRoute
+  '/aps/audit': typeof AuthenticatedApsAuditRoute
+  '/aps/capacity': typeof AuthenticatedApsCapacityRoute
+  '/aps/compliance': typeof AuthenticatedApsComplianceRoute
+  '/aps/conflicts': typeof AuthenticatedApsConflictsRoute
+  '/aps/integrations': typeof AuthenticatedApsIntegrationsRoute
+  '/aps/orders': typeof AuthenticatedApsOrdersRoute
+  '/aps/resources': typeof AuthenticatedApsResourcesRoute
+  '/aps/rules': typeof AuthenticatedApsRulesRoute
+  '/aps/schedule': typeof AuthenticatedApsScheduleRoute
+  '/aps/versions': typeof AuthenticatedApsVersionsRoute
   '/production-orders/$poId': typeof AuthenticatedProductionOrdersPoIdRoute
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/skills/$skillId': typeof AuthenticatedSkillsSkillIdRoute
   '/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/aps': typeof AuthenticatedApsIndexRoute
   '/production-orders': typeof AuthenticatedProductionOrdersIndexRoute
   '/products': typeof AuthenticatedProductsIndexRoute
   '/skills': typeof AuthenticatedSkillsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/api/public/integrations/$source': typeof ApiPublicIntegrationsSourceRoute
+  '/api/public/schedule/approved': typeof ApiPublicScheduleApprovedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/aps': typeof AuthenticatedApsRouteRouteWithChildren
   '/_authenticated/assignments': typeof AuthenticatedAssignmentsRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
@@ -194,14 +324,28 @@ export interface FileRoutesById {
   '/_authenticated/scheduling': typeof AuthenticatedSchedulingRoute
   '/_authenticated/shifts': typeof AuthenticatedShiftsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/aps/approvals': typeof AuthenticatedApsApprovalsRoute
+  '/_authenticated/aps/audit': typeof AuthenticatedApsAuditRoute
+  '/_authenticated/aps/capacity': typeof AuthenticatedApsCapacityRoute
+  '/_authenticated/aps/compliance': typeof AuthenticatedApsComplianceRoute
+  '/_authenticated/aps/conflicts': typeof AuthenticatedApsConflictsRoute
+  '/_authenticated/aps/integrations': typeof AuthenticatedApsIntegrationsRoute
+  '/_authenticated/aps/orders': typeof AuthenticatedApsOrdersRoute
+  '/_authenticated/aps/resources': typeof AuthenticatedApsResourcesRoute
+  '/_authenticated/aps/rules': typeof AuthenticatedApsRulesRoute
+  '/_authenticated/aps/schedule': typeof AuthenticatedApsScheduleRoute
+  '/_authenticated/aps/versions': typeof AuthenticatedApsVersionsRoute
   '/_authenticated/production-orders/$poId': typeof AuthenticatedProductionOrdersPoIdRoute
   '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/_authenticated/skills/$skillId': typeof AuthenticatedSkillsSkillIdRoute
   '/_authenticated/users/$userId': typeof AuthenticatedUsersUserIdRoute
+  '/_authenticated/aps/': typeof AuthenticatedApsIndexRoute
   '/_authenticated/production-orders/': typeof AuthenticatedProductionOrdersIndexRoute
   '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
   '/_authenticated/skills/': typeof AuthenticatedSkillsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/api/public/integrations/$source': typeof ApiPublicIntegrationsSourceRoute
+  '/api/public/schedule/approved': typeof ApiPublicScheduleApprovedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -209,6 +353,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/aps'
     | '/assignments'
     | '/inventory'
     | '/planner'
@@ -217,14 +362,28 @@ export interface FileRouteTypes {
     | '/reports'
     | '/scheduling'
     | '/shifts'
+    | '/aps/approvals'
+    | '/aps/audit'
+    | '/aps/capacity'
+    | '/aps/compliance'
+    | '/aps/conflicts'
+    | '/aps/integrations'
+    | '/aps/orders'
+    | '/aps/resources'
+    | '/aps/rules'
+    | '/aps/schedule'
+    | '/aps/versions'
     | '/production-orders/$poId'
     | '/products/$productId'
     | '/skills/$skillId'
     | '/users/$userId'
+    | '/aps/'
     | '/production-orders/'
     | '/products/'
     | '/skills/'
     | '/users/'
+    | '/api/public/integrations/$source'
+    | '/api/public/schedule/approved'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -238,19 +397,34 @@ export interface FileRouteTypes {
     | '/scheduling'
     | '/shifts'
     | '/'
+    | '/aps/approvals'
+    | '/aps/audit'
+    | '/aps/capacity'
+    | '/aps/compliance'
+    | '/aps/conflicts'
+    | '/aps/integrations'
+    | '/aps/orders'
+    | '/aps/resources'
+    | '/aps/rules'
+    | '/aps/schedule'
+    | '/aps/versions'
     | '/production-orders/$poId'
     | '/products/$productId'
     | '/skills/$skillId'
     | '/users/$userId'
+    | '/aps'
     | '/production-orders'
     | '/products'
     | '/skills'
     | '/users'
+    | '/api/public/integrations/$source'
+    | '/api/public/schedule/approved'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/aps'
     | '/_authenticated/assignments'
     | '/_authenticated/inventory'
     | '/_authenticated/planner'
@@ -260,20 +434,36 @@ export interface FileRouteTypes {
     | '/_authenticated/scheduling'
     | '/_authenticated/shifts'
     | '/_authenticated/'
+    | '/_authenticated/aps/approvals'
+    | '/_authenticated/aps/audit'
+    | '/_authenticated/aps/capacity'
+    | '/_authenticated/aps/compliance'
+    | '/_authenticated/aps/conflicts'
+    | '/_authenticated/aps/integrations'
+    | '/_authenticated/aps/orders'
+    | '/_authenticated/aps/resources'
+    | '/_authenticated/aps/rules'
+    | '/_authenticated/aps/schedule'
+    | '/_authenticated/aps/versions'
     | '/_authenticated/production-orders/$poId'
     | '/_authenticated/products/$productId'
     | '/_authenticated/skills/$skillId'
     | '/_authenticated/users/$userId'
+    | '/_authenticated/aps/'
     | '/_authenticated/production-orders/'
     | '/_authenticated/products/'
     | '/_authenticated/skills/'
     | '/_authenticated/users/'
+    | '/api/public/integrations/$source'
+    | '/api/public/schedule/approved'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicIntegrationsSourceRoute: typeof ApiPublicIntegrationsSourceRoute
+  ApiPublicScheduleApprovedRoute: typeof ApiPublicScheduleApprovedRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -304,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/aps': {
+      id: '/_authenticated/aps'
+      path: '/aps'
+      fullPath: '/aps'
+      preLoaderRoute: typeof AuthenticatedApsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/assignments': {
@@ -362,6 +559,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShiftsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/aps/': {
+      id: '/_authenticated/aps/'
+      path: '/'
+      fullPath: '/aps/'
+      preLoaderRoute: typeof AuthenticatedApsIndexRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/approvals': {
+      id: '/_authenticated/aps/approvals'
+      path: '/approvals'
+      fullPath: '/aps/approvals'
+      preLoaderRoute: typeof AuthenticatedApsApprovalsRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/audit': {
+      id: '/_authenticated/aps/audit'
+      path: '/audit'
+      fullPath: '/aps/audit'
+      preLoaderRoute: typeof AuthenticatedApsAuditRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/capacity': {
+      id: '/_authenticated/aps/capacity'
+      path: '/capacity'
+      fullPath: '/aps/capacity'
+      preLoaderRoute: typeof AuthenticatedApsCapacityRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/compliance': {
+      id: '/_authenticated/aps/compliance'
+      path: '/compliance'
+      fullPath: '/aps/compliance'
+      preLoaderRoute: typeof AuthenticatedApsComplianceRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/conflicts': {
+      id: '/_authenticated/aps/conflicts'
+      path: '/conflicts'
+      fullPath: '/aps/conflicts'
+      preLoaderRoute: typeof AuthenticatedApsConflictsRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/integrations': {
+      id: '/_authenticated/aps/integrations'
+      path: '/integrations'
+      fullPath: '/aps/integrations'
+      preLoaderRoute: typeof AuthenticatedApsIntegrationsRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/orders': {
+      id: '/_authenticated/aps/orders'
+      path: '/orders'
+      fullPath: '/aps/orders'
+      preLoaderRoute: typeof AuthenticatedApsOrdersRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/resources': {
+      id: '/_authenticated/aps/resources'
+      path: '/resources'
+      fullPath: '/aps/resources'
+      preLoaderRoute: typeof AuthenticatedApsResourcesRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/rules': {
+      id: '/_authenticated/aps/rules'
+      path: '/rules'
+      fullPath: '/aps/rules'
+      preLoaderRoute: typeof AuthenticatedApsRulesRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/schedule': {
+      id: '/_authenticated/aps/schedule'
+      path: '/schedule'
+      fullPath: '/aps/schedule'
+      preLoaderRoute: typeof AuthenticatedApsScheduleRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
+    '/_authenticated/aps/versions': {
+      id: '/_authenticated/aps/versions'
+      path: '/versions'
+      fullPath: '/aps/versions'
+      preLoaderRoute: typeof AuthenticatedApsVersionsRouteImport
+      parentRoute: typeof AuthenticatedApsRouteRoute
+    }
     '/_authenticated/production-orders/': {
       id: '/_authenticated/production-orders/'
       path: '/production-orders'
@@ -418,10 +699,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersUserIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/integrations/$source': {
+      id: '/api/public/integrations/$source'
+      path: '/api/public/integrations/$source'
+      fullPath: '/api/public/integrations/$source'
+      preLoaderRoute: typeof ApiPublicIntegrationsSourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/schedule/approved': {
+      id: '/api/public/schedule/approved'
+      path: '/api/public/schedule/approved'
+      fullPath: '/api/public/schedule/approved'
+      preLoaderRoute: typeof ApiPublicScheduleApprovedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedApsRouteRouteChildren {
+  AuthenticatedApsApprovalsRoute: typeof AuthenticatedApsApprovalsRoute
+  AuthenticatedApsAuditRoute: typeof AuthenticatedApsAuditRoute
+  AuthenticatedApsCapacityRoute: typeof AuthenticatedApsCapacityRoute
+  AuthenticatedApsComplianceRoute: typeof AuthenticatedApsComplianceRoute
+  AuthenticatedApsConflictsRoute: typeof AuthenticatedApsConflictsRoute
+  AuthenticatedApsIntegrationsRoute: typeof AuthenticatedApsIntegrationsRoute
+  AuthenticatedApsOrdersRoute: typeof AuthenticatedApsOrdersRoute
+  AuthenticatedApsResourcesRoute: typeof AuthenticatedApsResourcesRoute
+  AuthenticatedApsRulesRoute: typeof AuthenticatedApsRulesRoute
+  AuthenticatedApsScheduleRoute: typeof AuthenticatedApsScheduleRoute
+  AuthenticatedApsVersionsRoute: typeof AuthenticatedApsVersionsRoute
+  AuthenticatedApsIndexRoute: typeof AuthenticatedApsIndexRoute
+}
+
+const AuthenticatedApsRouteRouteChildren: AuthenticatedApsRouteRouteChildren = {
+  AuthenticatedApsApprovalsRoute: AuthenticatedApsApprovalsRoute,
+  AuthenticatedApsAuditRoute: AuthenticatedApsAuditRoute,
+  AuthenticatedApsCapacityRoute: AuthenticatedApsCapacityRoute,
+  AuthenticatedApsComplianceRoute: AuthenticatedApsComplianceRoute,
+  AuthenticatedApsConflictsRoute: AuthenticatedApsConflictsRoute,
+  AuthenticatedApsIntegrationsRoute: AuthenticatedApsIntegrationsRoute,
+  AuthenticatedApsOrdersRoute: AuthenticatedApsOrdersRoute,
+  AuthenticatedApsResourcesRoute: AuthenticatedApsResourcesRoute,
+  AuthenticatedApsRulesRoute: AuthenticatedApsRulesRoute,
+  AuthenticatedApsScheduleRoute: AuthenticatedApsScheduleRoute,
+  AuthenticatedApsVersionsRoute: AuthenticatedApsVersionsRoute,
+  AuthenticatedApsIndexRoute: AuthenticatedApsIndexRoute,
+}
+
+const AuthenticatedApsRouteRouteWithChildren =
+  AuthenticatedApsRouteRoute._addFileChildren(
+    AuthenticatedApsRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedApsRouteRoute: typeof AuthenticatedApsRouteRouteWithChildren
   AuthenticatedAssignmentsRoute: typeof AuthenticatedAssignmentsRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
@@ -442,6 +773,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedApsRouteRoute: AuthenticatedApsRouteRouteWithChildren,
   AuthenticatedAssignmentsRoute: AuthenticatedAssignmentsRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
@@ -470,6 +802,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicIntegrationsSourceRoute: ApiPublicIntegrationsSourceRoute,
+  ApiPublicScheduleApprovedRoute: ApiPublicScheduleApprovedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
