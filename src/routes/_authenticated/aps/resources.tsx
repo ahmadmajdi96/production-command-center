@@ -1,3 +1,4 @@
+import { needsQueryStatus, QueryStatus } from "@/components/aps/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -194,7 +195,9 @@ function Simple<T>({
   table: "shifts" | "maintenance_events" | "changeovers" | "materials" | "products";
   cols: [string, (r: T) => React.ReactNode][];
 }) {
-  const { data = [] } = useTable<T>(table);
+  const query = useTable<T>(table);
+  const { data = [] } = query;
+  if (needsQueryStatus([query])) return <QueryStatus queries={[query]} subject="resources" />;
   return (
     <Panel>
       <div className="overflow-x-auto">
@@ -226,9 +229,11 @@ function Simple<T>({
 }
 
 function Machines() {
-  const { data = [] } = useTable<Machine>("machines", { column: "code" });
+  const query = useTable<Machine>("machines", { column: "code" });
+  const { data = [] } = query;
   const canEdit = useCan("resources", "edit");
   const [edit, setEdit] = useState<Machine | null>(null);
+  if (needsQueryStatus([query])) return <QueryStatus queries={[query]} subject="machines" />;
   return (
     <Panel>
       <Table className="w-full">
@@ -357,10 +362,12 @@ function MachineModal({ m, onClose }: { m: Machine; onClose: () => void }) {
 }
 
 function Workforce() {
-  const { data = [] } = useTable<Operator>("operators", { column: "name" });
+  const query = useTable<Operator>("operators", { column: "name" });
+  const { data = [] } = query;
   const canEdit = useCan("resources", "edit");
   const qc = useQueryClient();
   const toggle = useServerFn(setOperatorAvailability);
+  if (needsQueryStatus([query])) return <QueryStatus queries={[query]} subject="operators" />;
   async function flip(o: Operator) {
     try {
       await toggle({ data: { id: o.id, available: !o.available } });

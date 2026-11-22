@@ -1,3 +1,4 @@
+import { needsQueryStatus, QueryStatus } from "@/components/aps/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -81,21 +82,32 @@ type Fb = {
 };
 
 function Integrations() {
-  const { data: sources = [] } = useTable<Src>("integration_sources", { column: "name" });
-  const { data: events = [] } = useTable<Evt>("integration_events", {
+  const sourcesQuery = useTable<Src>("integration_sources", { column: "name" });
+  const eventsQuery = useTable<Evt>("integration_events", {
     column: "received_at",
     ascending: false,
   });
-  const { data: feedback = [] } = useTable<Fb>("execution_feedback", {
+  const feedbackQuery = useTable<Fb>("execution_feedback", {
     column: "received_at",
     ascending: false,
   });
+  const { data: sources = [] } = sourcesQuery;
+  const { data: events = [] } = eventsQuery;
+  const { data: feedback = [] } = feedbackQuery;
   const [open, setOpen] = useState<string | null>(null);
   const base = typeof window !== "undefined" ? window.location.origin : "";
-  const copy = (t: string) => {
-    void navigator.clipboard.writeText(t);
-    toast.success("Copied");
+  const copy = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success("Copied");
+    } catch {
+      toast.error("Couldn’t copy. Select and copy the endpoint manually.");
+    }
   };
+  const queries = [sourcesQuery, eventsQuery, feedbackQuery];
+  if (needsQueryStatus(queries))
+    return <QueryStatus queries={queries} subject="integration activity" />;
+
   return (
     <>
       <PageHead
@@ -104,7 +116,7 @@ function Integrations() {
         desc="Each source system pushes its data to APS; APS publishes the approved schedule back to MES. Every message is logged and every sync is in the audit trail."
       />
       <Panel title="Interface contract (version 1)">
-        <div className="space-y-1 text-xs text-muted-foreground">
+        <div className="space-y-2 text-xs text-muted-foreground [overflow-wrap:anywhere]">
           <p>
             User access is read from the <span className="text-foreground">Command Access Hub</span>{" "}
             (system key <span className="font-mono text-foreground">aps</span>) on every sign-in and
@@ -334,12 +346,13 @@ function Integrations() {
 }
 
 function SettingsPanel() {
-  const { data: settings = [] } = useTable<{
+  const settingsQuery = useTable<{
     key: string;
     value: unknown;
     updated_by: string | null;
     updated_at: string;
   }>("app_settings");
+  const { data: settings = [] } = settingsQuery;
   const canEdit = useCan("integrations", "edit");
   const save = useServerFn(saveSettings);
   const qc = useQueryClient();
@@ -368,6 +381,9 @@ function SettingsPanel() {
     }
   }
   const updated = get("plant_timezone");
+  const queries = [settingsQuery];
+  if (needsQueryStatus(queries)) return <QueryStatus queries={queries} subject="plant settings" />;
+
   return (
     <Panel title="Plant settings">
       <div className="grid gap-3 sm:grid-cols-3">

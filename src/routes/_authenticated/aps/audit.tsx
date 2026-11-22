@@ -1,3 +1,4 @@
+import { needsQueryStatus, QueryStatus } from "@/components/aps/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -56,11 +57,13 @@ type Row = {
 };
 
 function Audit() {
-  const { data: rows = [] } = useTable<Row>("audit_log", { column: "at", ascending: false });
+  const rowsQuery = useTable<Row>("audit_log", { column: "at", ascending: false });
+  const { data: rows = [] } = rowsQuery;
   const [q, setQ] = useState("");
   const [entity, setEntity] = useState("all");
   const entities = Array.from(new Set(rows.map((r) => r.entity)));
-  const { data: settings = [] } = useTable<{ key: string; value: unknown }>("app_settings");
+  const settingsQuery = useTable<{ key: string; value: unknown }>("app_settings");
+  const { data: settings = [] } = settingsQuery;
   const retention = settings.find((x) => x.key === "audit_retention_years")?.value as
     number | undefined;
   const verify = useServerFn(verifyAuditChain);
@@ -109,6 +112,9 @@ function Audit() {
       (entity === "all" || r.entity === entity) &&
       (!q || JSON.stringify(r).toLowerCase().includes(q.toLowerCase())),
   );
+  const queries = [rowsQuery, settingsQuery];
+  if (needsQueryStatus(queries)) return <QueryStatus queries={queries} subject="audit history" />;
+
   return (
     <>
       <PageHead
@@ -119,6 +125,7 @@ function Audit() {
         <Input
           className={`${inp} w-56`}
           placeholder="Search…"
+          aria-label="Search audit history"
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />

@@ -1,3 +1,4 @@
+import { needsQueryStatus, QueryStatus } from "@/components/aps/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -70,8 +71,8 @@ const POLICY: Record<string, string> = {
 };
 
 function Rules() {
-  const { data: rules = [] } = useTable<RuleRow>("business_rules", { column: "rule_priority" });
-  const { data: log = [] } = useTable<{
+  const rulesQuery = useTable<RuleRow>("business_rules", { column: "rule_priority" });
+  const logQuery = useTable<{
     id: string;
     at: string;
     actor: string;
@@ -82,6 +83,8 @@ function Rules() {
     before_value: Record<string, unknown> | null;
     after_value: Record<string, unknown> | null;
   }>("audit_log", { column: "at", ascending: false }, "business-rules");
+  const { data: rules = [] } = rulesQuery;
+  const { data: log = [] } = logQuery;
   const history = log.filter((l) => l.entity === "business_rule");
   const canCreate = useCan("business-rules", "create");
   const canEdit = useCan("business-rules", "edit");
@@ -125,6 +128,10 @@ function Rules() {
       toast.error(errMsg(e));
     }
   }
+
+  const queries = [rulesQuery, logQuery];
+  if (needsQueryStatus(queries))
+    return <QueryStatus queries={queries} subject="planning rules and history" />;
 
   return (
     <>

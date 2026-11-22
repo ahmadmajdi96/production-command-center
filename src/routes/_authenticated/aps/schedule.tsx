@@ -10,7 +10,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { GanttChart, Play, RefreshCw, Send } from "lucide-react";
@@ -65,16 +65,16 @@ function Schedule() {
   const previewQuery = usePreview("schedule");
   const { data: preview } = previewQuery;
   const { data: versions = [] } = versionQuery;
-  const { data: machines = [] } = useTable<Machine>("machines", { column: "code" });
-  const [sel, setSel] = useState<string>("live");
+  const machinesQuery = useTable<Machine>("machines", { column: "code" });
+  const { data: machines = [] } = machinesQuery;
+  const [selectedVersion, setSel] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [gen, setGen] = useState<null | "new" | "re">(null);
   const canCreate = useCan("schedule", "create");
   const canEdit = useCan("schedule", "edit");
   const qc = useQueryClient();
   const submit = useServerFn(submitVersion);
-  useEffect(() => {
-    if (sel === "live" && versions[0]) setSel(versions[0].id);
-  }, [versions.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const sel = selectedVersion ?? versions[0]?.id ?? "live";
 
   const v = versions.find((x) => x.id === sel);
   const items = v ? v.items : (preview?.items ?? []);
@@ -84,17 +84,21 @@ function Schedule() {
   const current = versions.find((x) => x.status === "approved");
 
   async function doSubmit() {
-    if (!v) return;
+    if (!v || submitting) return;
+    setSubmitting(true);
     try {
       await submit({ data: { id: v.id } });
       toast.success(`v${v.version_no} submitted for approval`);
-      qc.invalidateQueries({ queryKey: ["versions"] });
+      await qc.invalidateQueries({ queryKey: ["versions"] });
+      void qc.invalidateQueries({ queryKey: ["table", "audit_log"] });
     } catch (e) {
       toast.error(errMsg(e));
+    } finally {
+      setSubmitting(false);
     }
   }
 
-  const queries = [versionQuery, previewQuery];
+  const queries = v ? [versionQuery, machinesQuery] : [versionQuery, previewQuery, machinesQuery];
   if (needsQueryStatus(queries))
     return <QueryStatus queries={queries} subject="production schedule" />;
 
@@ -137,9 +141,16 @@ function Schedule() {
           </Button>
         )}
         {canEdit && v && ["draft", "rejected"].includes(v.status) && (
-          <Button type="button" size="sm" variant="outline" className={ghost} onClick={doSubmit}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className={ghost}
+            onClick={doSubmit}
+            disabled={submitting}
+          >
             <Send className="h-3.5 w-3.5" />
-            Submit for approval
+            {submitting ? "Submitting…" : "Submit for approval"}
           </Button>
         )}
       </PageHead>

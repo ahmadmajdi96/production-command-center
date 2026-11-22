@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/page-shell";
 import { useRef, type ReactNode } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -21,18 +22,7 @@ export function PageHead({
   desc: string;
   children?: ReactNode;
 }) {
-  return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="flex items-center gap-2 font-display text-2xl font-semibold">
-          {icon}
-          {title}
-        </h1>
-        <p className="text-sm text-muted-foreground">{desc}</p>
-      </div>
-      {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
-    </div>
-  );
+  return <PageHeader title={title} subtitle={desc} icon={icon} actions={children} />;
 }
 
 export function Panel({
@@ -51,9 +41,7 @@ export function Panel({
       {(title || action) && (
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           {title && (
-            <h2 className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              {title}
-            </h2>
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">{title}</h2>
           )}
           {action}
         </div>

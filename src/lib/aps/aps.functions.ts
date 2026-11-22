@@ -2,7 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireApsIdentity } from "./identity-middleware";
-import { buildInputSnapshot, detectStalePlan, generateSchedule, type ScheduleItem, type InputSnapshot } from "./engine";
+import {
+  buildInputSnapshot,
+  detectStalePlan,
+  generateSchedule,
+  type ScheduleItem,
+  type InputSnapshot,
+} from "./engine";
 import { previewScope, versionScope, tableReadInput, readTablePermissions } from "./reads";
 
 const access = () => import("./access.server");
@@ -23,12 +29,17 @@ export const readApsTable = createServerFn({ method: "GET" })
   .handler(async ({ data: input, context }) => {
     await (await access()).requirePermission(context.apsEmail, readTablePermissions(input), "view");
     const db = await database();
-    let query = input.scope === "business-rules"
-      ? db.from("audit_log").select("*").eq("entity", "business_rule")
-      : input.table === "app_settings"
-        ? db.from("app_settings").select("*").in("key", ["plant_timezone", "audit_retention_years"])
-        : db.from(input.table).select("*");
-    if (input.order) query = query.order(input.order.column, { ascending: input.order.ascending ?? true });
+    let query =
+      input.scope === "business-rules"
+        ? db.from("audit_log").select("*").eq("entity", "business_rule")
+        : input.table === "app_settings"
+          ? db
+              .from("app_settings")
+              .select("*")
+              .in("key", ["plant_timezone", "audit_retention_years"])
+          : db.from(input.table).select("*");
+    if (input.order)
+      query = query.order(input.order.column, { ascending: input.order.ascending ?? true });
     const { data, error } = await query.limit(1000);
     if (error) throw new Error(error.message);
     return data;
@@ -39,12 +50,19 @@ export const readApsVersions = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => z.object({ scope: versionScope }).parse(input))
   .handler(async ({ data: { scope }, context }) => {
     await (await access()).requirePermission(context.apsEmail, scope, "view");
-    const columns = scope === "dashboard"
-      ? "id,version_no,status,kind,created_at,created_by"
-      : scope === "conflicts"
-        ? "id,version_no,status,conflicts"
-        : "id,version_no,parent_id,status,kind,trigger,reason,created_by,created_at,horizon_start,items,conflicts,metrics,rules_applied,feasibility";
-    const { data, error } = await (await database()).from("schedule_versions").select(columns).order("version_no", { ascending: false }).limit(200);
+    const columns =
+      scope === "dashboard"
+        ? "id,version_no,status,kind,created_at,created_by"
+        : scope === "conflicts"
+          ? "id,version_no,status,conflicts"
+          : "id,version_no,parent_id,status,kind,trigger,reason,created_by,created_at,horizon_start,items,conflicts,metrics,rules_applied,feasibility";
+    const { data, error } = await (
+      await database()
+    )
+      .from("schedule_versions")
+      .select(columns)
+      .order("version_no", { ascending: false })
+      .limit(200);
     if (error) throw new Error(error.message);
     return data;
   });
@@ -59,17 +77,34 @@ export const previewPlan = createServerFn({ method: "GET" })
     const { items, conflicts, rulesApplied, feasibility, metrics, capacity, skills } =
       generateSchedule(orders, data, rules, new Date().toISOString());
     switch (scope) {
-      case "dashboard": return { feasibility, conflicts, metrics, capacity };
-      case "orders": return { feasibility };
-      case "schedule": return { items, conflicts, rulesApplied, metrics };
-      case "capacity": return { capacity, skills };
-      case "conflicts": return { conflicts };
+      case "dashboard":
+        return { feasibility, conflicts, metrics, capacity };
+      case "orders":
+        return { feasibility };
+      case "schedule":
+        return { items, conflicts, rulesApplied, metrics };
+      case "capacity":
+        return { capacity, skills };
+      case "conflicts":
+        return { conflicts };
     }
   });
 
 const genInput = z.object({
   reason: z.string().trim().min(3).max(500),
-  trigger: z.enum(["new_plan", "machine_failure", "operator_absence", "material_delay", "due_date_change", "new_order", "capacity_change", "shift_change", "manual", "quality_hold", "revision_change"]),
+  trigger: z.enum([
+    "new_plan",
+    "machine_failure",
+    "operator_absence",
+    "material_delay",
+    "due_date_change",
+    "new_order",
+    "capacity_change",
+    "shift_change",
+    "manual",
+    "quality_hold",
+    "revision_change",
+  ]),
 });
 export const createScheduleVersion = createServerFn({ method: "POST" })
   .middleware([requireApsIdentity])
@@ -77,23 +112,28 @@ export const createScheduleVersion = createServerFn({ method: "POST" })
   .handler(async ({ data: input, context }) => {
     const a = await access();
     const me = await a.requirePermission(context.apsEmail, "schedule", "create");
-    const { data, orders, rules } = await loadPlant(await database());
-    const result = generateSchedule(orders, data, rules, new Date().toISOString());
     const db = await database();
-    const { data: latest } = await db.from("schedule_versions").select("id, version_no, status").order("version_no", { ascending: false }).limit(1).maybeSingle();
-    const { data: approved } = await db.from("schedule_versions").select("id").eq("status", "approved").order("version_no", { ascending: false }).limit(1).maybeSingle();
-    const row = {
-      version_no: (latest?.version_no ?? 0) + 1, parent_id: approved?.id ?? latest?.id ?? null, status: "draft",
-      kind: input.trigger === "new_plan" ? "generated" : "rescheduled", trigger: input.trigger, reason: input.reason,
-      created_by: me.email, horizon_start: new Date().toISOString(),
-      items: result.items as never, conflicts: result.conflicts as never, metrics: { ...result.metrics, sequence: result.sequence } as never,
-      rules_applied: result.rulesApplied as never, feasibility: result.feasibility as never,
-      input_snapshot: buildInputSnapshot(data, orders, new Date().toISOString()) as never,
-    };
-    const { data: ins, error } = await db.from("schedule_versions").insert(row).select("id, version_no").single();
+    const { data, orders, rules } = await loadPlant(db);
+    const horizonStart = new Date().toISOString();
+    const result = generateSchedule(orders, data, rules, horizonStart);
+    const { data: draft, error } = await db
+      .rpc("aps_create_schedule_draft", {
+        actor_email: me.email,
+        draft: {
+          trigger: input.trigger,
+          reason: input.reason,
+          horizon_start: horizonStart,
+          items: result.items,
+          conflicts: result.conflicts,
+          metrics: { ...result.metrics, sequence: result.sequence },
+          rules_applied: result.rulesApplied,
+          feasibility: result.feasibility,
+          input_snapshot: buildInputSnapshot(data, orders, horizonStart),
+        },
+      })
+      .single();
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: row.kind === "generated" ? "schedule.created" : "schedule.rescheduled", entity: "schedule_version", entity_id: `v${ins.version_no}`, after_value: { conflicts: result.conflicts.length, ...result.metrics }, reason: input.reason });
-    return ins;
+    return draft;
   });
 
 export const submitVersion = createServerFn({ method: "POST" })
@@ -102,12 +142,14 @@ export const submitVersion = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const a = await access();
     const me = await a.requirePermission(context.apsEmail, "schedule", "edit");
-    const db = await database();
-    const { data: v } = await db.from("schedule_versions").select("status, version_no").eq("id", data.id).single();
-    if (!v || !["draft", "rejected"].includes(v.status)) throw new Error("Only draft or rejected versions can be submitted.");
-    const { error } = await db.from("schedule_versions").update({ status: "pending_approval" }).eq("id", data.id);
+    const { error } = await (
+      await database()
+    ).rpc("aps_transition_schedule", {
+      target_id: data.id,
+      actor_email: me.email,
+      decision: "submit",
+    });
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: "schedule.submitted", entity: "schedule_version", entity_id: `v${v.version_no}`, before_value: { status: v.status }, after_value: { status: "pending_approval" } });
     return { ok: true };
   });
 
@@ -123,31 +165,39 @@ export const signVersion = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const a = await access();
     const me = await a.requirePermission(context.apsEmail, "approvals", "edit");
-    if (data.decision === "rejected" && data.comment.length < 3) throw new Error("A rejection reason is required.");
+    if (data.decision === "rejected" && data.comment.length < 3)
+      throw new Error("A rejection reason is required.");
     // Electronic signature: re-verify the signer's password.
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
     const verifier = createClient(process.env["SUPABASE_URL"]!, key, {
       auth: { persistSession: false, autoRefreshToken: false },
-      global: { fetch: (input, init) => { const h = new Headers(init?.headers); if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization"); h.set("apikey", key); return fetch(input, { ...init, headers: h }); } },
+      global: {
+        fetch: (input, init) => {
+          const h = new Headers(init?.headers);
+          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`)
+            h.delete("Authorization");
+          h.set("apikey", key);
+          return fetch(input, { ...init, headers: h });
+        },
+      },
     });
-    const { data: signature, error: pwErr } = await verifier.auth.signInWithPassword({ email: me.email, password: data.password });
+    const { data: signature, error: pwErr } = await verifier.auth.signInWithPassword({
+      email: me.email,
+      password: data.password,
+    });
     if (pwErr || !signature.user || signature.user.id !== context.apsUserId) {
       throw new Error("Signature failed: verify your password and try again.");
     }
-    const db = await database();
-    const { data: v } = await db.from("schedule_versions").select("status, version_no").eq("id", data.id).single();
-    if (!v || v.status !== "pending_approval") throw new Error("This version is not awaiting approval.");
-    const meaning = data.decision === "approved" ? "I approve this production schedule for execution" : "I reject this production schedule";
-    const { error: signatureError } = await db.from("approvals").insert({ version_id: data.id, decision: data.decision, signer_email: me.email, signer_name: me.fullName, meaning, comment: data.comment || null });
-    if (signatureError) throw new Error(signatureError.message);
-    if (data.decision === "approved") {
-      const { error } = await db.from("schedule_versions").update({ status: "superseded", dispatch_status: "superseded" }).eq("status", "approved");
-      if (error) throw new Error(error.message);
-    }
-    const at = new Date().toISOString();
-    const { error } = await db.from("schedule_versions").update(data.decision === "approved" ? { status: "approved", approved_at: at, dispatch_status: "released", released_at: at } : { status: "rejected" }).eq("id", data.id);
+    const { error } = await (
+      await database()
+    ).rpc("aps_transition_schedule", {
+      target_id: data.id,
+      actor_email: me.email,
+      decision: data.decision,
+      signer_name: me.fullName,
+      comment: data.comment || null,
+    });
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: `schedule.${data.decision}`, entity: "schedule_version", entity_id: `v${v.version_no}`, before_value: { status: v.status }, after_value: { status: data.decision, signature: meaning }, reason: data.comment || null });
     return { ok: true };
   });
 
@@ -167,10 +217,20 @@ export const saveRule = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => ruleInput.parse(i))
   .handler(async ({ data, context }) => {
     const a = await access();
-    const me = await a.requirePermission(context.apsEmail, "business-rules", data.id ? "edit" : "create");
+    const me = await a.requirePermission(
+      context.apsEmail,
+      "business-rules",
+      data.id ? "edit" : "create",
+    );
     const db = await database();
     const { id, reason, ...fields } = data;
-    const row = { ...fields, conflict_policy: fields.criterion === "changeover" ? fields.conflict_policy ?? "protect_due_dates" : null, updated_by: me.email, updated_at: new Date().toISOString() };
+    const row = {
+      ...fields,
+      conflict_policy:
+        fields.criterion === "changeover" ? (fields.conflict_policy ?? "protect_due_dates") : null,
+      updated_by: me.email,
+      updated_at: new Date().toISOString(),
+    };
     let before = null;
     if (id) {
       before = (await db.from("business_rules").select("*").eq("id", id).single()).data;
@@ -178,11 +238,26 @@ export const saveRule = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     } else {
       const { data: codes } = await db.from("business_rules").select("code");
-      const next = 1 + Math.max(0, ...(codes ?? []).map((c) => Number(String(c.code ?? "").replace(/\D/g, "")) || 0));
-      const { error } = await db.from("business_rules").insert({ ...row, code: `APS-PLAN-${String(next).padStart(3, "0")}`, domain: "planning" });
+      const next =
+        1 +
+        Math.max(
+          0,
+          ...(codes ?? []).map((c) => Number(String(c.code ?? "").replace(/\D/g, "")) || 0),
+        );
+      const { error } = await db
+        .from("business_rules")
+        .insert({ ...row, code: `APS-PLAN-${String(next).padStart(3, "0")}`, domain: "planning" });
       if (error) throw new Error(error.message);
     }
-    await a.audit({ actor: me.email, action: id ? "rule.updated" : "rule.created", entity: "business_rule", entity_id: data.name, before_value: before, after_value: row, reason: reason || null });
+    await a.audit({
+      actor: me.email,
+      action: id ? "rule.updated" : "rule.created",
+      entity: "business_rule",
+      entity_id: data.name,
+      before_value: before,
+      after_value: row,
+      reason: reason || null,
+    });
     return { ok: true };
   });
 
@@ -196,11 +271,22 @@ export const deleteRule = createServerFn({ method: "POST" })
     const before = (await db.from("business_rules").select("*").eq("id", data.id).single()).data;
     const { error } = await db.from("business_rules").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: "rule.deleted", entity: "business_rule", entity_id: before?.name ?? data.id, before_value: before });
+    await a.audit({
+      actor: me.email,
+      action: "rule.deleted",
+      entity: "business_rule",
+      entity_id: before?.name ?? data.id,
+      before_value: before,
+    });
     return { ok: true };
   });
 
-const machineInput = z.object({ code: z.string().min(1).max(40), status: z.enum(["running", "idle", "down", "maintenance"]), rate_per_hour: z.number().positive().max(1_000_000), repair_eta: z.string().datetime().nullable() });
+const machineInput = z.object({
+  code: z.string().min(1).max(40),
+  status: z.enum(["running", "idle", "down", "maintenance"]),
+  rate_per_hour: z.number().positive().max(1_000_000),
+  repair_eta: z.string().datetime().nullable(),
+});
 export const updateMachine = createServerFn({ method: "POST" })
   .middleware([requireApsIdentity])
   .inputValidator((i: unknown) => machineInput.parse(i))
@@ -208,25 +294,54 @@ export const updateMachine = createServerFn({ method: "POST" })
     const a = await access();
     const me = await a.requirePermission(context.apsEmail, "resources", "edit");
     const db = await database();
-    const before = (await db.from("machines").select("status, rate_per_hour, repair_eta").eq("code", data.code).single()).data;
+    const before = (
+      await db
+        .from("machines")
+        .select("status, rate_per_hour, repair_eta")
+        .eq("code", data.code)
+        .single()
+    ).data;
     const { code, ...after } = data;
-    const { error } = await db.from("machines").update({ ...after, updated_at: new Date().toISOString() }).eq("code", code);
+    const { error } = await db
+      .from("machines")
+      .update({ ...after, updated_at: new Date().toISOString() })
+      .eq("code", code);
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: "machine.updated", entity: "machine", entity_id: code, before_value: before, after_value: after });
+    await a.audit({
+      actor: me.email,
+      action: "machine.updated",
+      entity: "machine",
+      entity_id: code,
+      before_value: before,
+      after_value: after,
+    });
     return { ok: true };
   });
 
 export const setOperatorAvailability = createServerFn({ method: "POST" })
   .middleware([requireApsIdentity])
-  .inputValidator((i: unknown) => z.object({ id: z.string().uuid(), available: z.boolean() }).parse(i))
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), available: z.boolean() }).parse(i),
+  )
   .handler(async ({ data, context }) => {
     const a = await access();
     const me = await a.requirePermission(context.apsEmail, "resources", "edit");
     const db = await database();
-    const before = (await db.from("operators").select("name, available").eq("id", data.id).single()).data;
-    const { error } = await db.from("operators").update({ available: data.available, updated_at: new Date().toISOString() }).eq("id", data.id);
+    const before = (await db.from("operators").select("name, available").eq("id", data.id).single())
+      .data;
+    const { error } = await db
+      .from("operators")
+      .update({ available: data.available, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: "operator.availability", entity: "operator", entity_id: before?.name ?? data.id, before_value: before, after_value: { available: data.available } });
+    await a.audit({
+      actor: me.email,
+      action: "operator.availability",
+      entity: "operator",
+      entity_id: before?.name ?? data.id,
+      before_value: before,
+      after_value: { available: data.available },
+    });
     return { ok: true };
   });
 
@@ -236,16 +351,51 @@ export const getPlanStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await (await access()).requirePermission(context.apsEmail, "dashboard", "view");
     const sb = await database();
-    const { data: v, error } = await sb.from("schedule_versions").select("id, version_no, items, input_snapshot, approved_at, dispatch_status, acknowledged_at, acknowledged_by").eq("status", "approved").order("version_no", { ascending: false }).limit(1).maybeSingle();
+    const { data: v, error } = await sb
+      .from("schedule_versions")
+      .select(
+        "id, version_no, items, input_snapshot, approved_at, dispatch_status, acknowledged_at, acknowledged_by",
+      )
+      .eq("status", "approved")
+      .order("version_no", { ascending: false })
+      .limit(1)
+      .maybeSingle();
     if (error) throw new Error(error.message);
     if (!v) return { approved: null };
     const { data, orders, timezone } = await loadPlant(sb);
-    const reasons = detectStalePlan(v.items as unknown as ScheduleItem[], v.input_snapshot as unknown as InputSnapshot | null, data, orders);
-    return { approved: { id: v.id as string, version_no: v.version_no as number, approved_at: v.approved_at as string | null, dispatch_status: v.dispatch_status as string, acknowledged_at: v.acknowledged_at as string | null, acknowledged_by: v.acknowledged_by as string | null }, reasons, timezone };
+    const reasons = detectStalePlan(
+      v.items as unknown as ScheduleItem[],
+      v.input_snapshot as unknown as InputSnapshot | null,
+      data,
+      orders,
+    );
+    return {
+      approved: {
+        id: v.id as string,
+        version_no: v.version_no as number,
+        approved_at: v.approved_at as string | null,
+        dispatch_status: v.dispatch_status as string,
+        acknowledged_at: v.acknowledged_at as string | null,
+        acknowledged_by: v.acknowledged_by as string | null,
+      },
+      reasons,
+      timezone,
+    };
   });
 
 const settingsInput = z.object({
-  plant_timezone: z.string().min(1).max(60).refine((tz) => { try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return true; } catch { return false; } }, "Unknown time zone"),
+  plant_timezone: z
+    .string()
+    .min(1)
+    .max(60)
+    .refine((tz) => {
+      try {
+        new Intl.DateTimeFormat("en-US", { timeZone: tz });
+        return true;
+      } catch {
+        return false;
+      }
+    }, "Unknown time zone"),
   audit_retention_years: z.number().int().min(1).max(50),
 });
 export const saveSettings = createServerFn({ method: "POST" })
@@ -257,9 +407,23 @@ export const saveSettings = createServerFn({ method: "POST" })
     const db = await database();
     const { data: before } = await db.from("app_settings").select("key, value");
     const now = new Date().toISOString();
-    const { error } = await db.from("app_settings").upsert(Object.entries(data).map(([key, value]) => ({ key, value: value as never, updated_by: me.email, updated_at: now })));
+    const { error } = await db.from("app_settings").upsert(
+      Object.entries(data).map(([key, value]) => ({
+        key,
+        value: value as never,
+        updated_by: me.email,
+        updated_at: now,
+      })),
+    );
     if (error) throw new Error(error.message);
-    await a.audit({ actor: me.email, action: "settings.updated", entity: "settings", entity_id: "plant", before_value: before, after_value: data });
+    await a.audit({
+      actor: me.email,
+      action: "settings.updated",
+      entity: "settings",
+      entity_id: "plant",
+      before_value: before,
+      after_value: data,
+    });
     return { ok: true };
   });
 

@@ -24,6 +24,8 @@ After the original history is applied, run `post-migrations/0003_service_access.
 
 Once the legacy APS browser client is retired, run `post-migrations/0004_retire_direct_reads.sql` on that database. The combined application uses authenticated MES sessions and verified APS grants through its server. This step removes the original APS browser reads and its direct verifier permission. Keep this script out of the MES migration workflow.
 
+Apply `post-migrations/0005_schedule_transactions.sql` before deploying the updated app. It adds the service-only schedule commands and unique version numbers. The constraint stops installation if there are duplicate historical numbers. Reconcile them against MES references and audit evidence before retrying. Retire legacy writers before switching to the commands.
+
 ## Local verification
 
 Run `bash aps-backend/check-local.sh` from the workspace with PostgreSQL's `initdb`, `pg_ctl` and `psql` on `PATH`. The script creates a fresh Unix-socket-only cluster and an `aps_test_migrations` database. It removes that isolated cluster on exit.
@@ -33,7 +35,7 @@ PostgreSQL 18.6 passed all three source migrations with 16 row-level security ta
 ## Source behavior to verify before launch
 
 - Keep the APS database session timezone consistent across audit writes and verification. The original hash serializes a timestamp as text. The isolated test verified a chain written in UTC from a UTC session, and a session switched to Asia/Amman reported a mismatch at the first row.
-- Schedule numbers have no unique constraint in the original schema. The isolated database accepted two versions with the same number. Verify concurrent version creation on the release candidate before a multi-planner rollout.
+- The local test runs competing draft creation and approval commands and injects an audit write failure. Verify the same workflow on the dedicated staging database with real MES and Hub test accounts before promoting.
 
 ## Cutover and rollback
 

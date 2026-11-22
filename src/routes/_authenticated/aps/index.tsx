@@ -34,12 +34,15 @@ export const Route = createFileRoute("/_authenticated/aps/")({
 function Dashboard() {
   const preview = usePreview();
   const plan = preview.data;
-  const { data: versions } = useVersions("dashboard");
-  const { data: planStatus } = usePlanStatus();
+  const versionsQuery = useVersions("dashboard");
+  const { data: versions } = versionsQuery;
+  const statusQuery = usePlanStatus();
+  const { data: planStatus } = statusQuery;
   const approved = versions?.find((v) => v.status === "approved");
   const pending = versions?.filter((v) => v.status === "pending_approval") ?? [];
-  if (!plan || needsQueryStatus([preview]))
-    return <QueryStatus queries={[preview]} subject="the planning overview" />;
+  const queries = [preview, versionsQuery, statusQuery];
+  if (!plan || needsQueryStatus(queries))
+    return <QueryStatus queries={queries} subject="the planning overview" />;
   const f = (s: string) => plan.feasibility.filter((x) => x.status === s).length;
   return (
     <>

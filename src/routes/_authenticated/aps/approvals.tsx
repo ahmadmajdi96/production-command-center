@@ -61,18 +61,20 @@ type ApprovalRow = {
 function Approvals() {
   const versionQuery = useVersions("approvals");
   const { data: versions = [] } = versionQuery;
-  const { data: machines = [] } = useTable<Machine>("machines", { column: "code" });
-  const { data: approvals = [] } = useTable<ApprovalRow>("approvals", {
+  const machinesQuery = useTable<Machine>("machines", { column: "code" });
+  const approvalsQuery = useTable<ApprovalRow>("approvals", {
     column: "signed_at",
     ascending: false,
   });
+  const { data: machines = [] } = machinesQuery;
+  const { data: approvals = [] } = approvalsQuery;
   const pending = versions.filter((v) => v.status === "pending_approval");
   const [sel, setSel] = useState<string | null>(null);
-  const v = pending.find((x) => x.id === (sel ?? pending[0]?.id));
+  const v = pending.find((x) => x.id === sel) ?? pending[0];
   const canSign = useCan("approvals", "edit");
   const [sign, setSign] = useState<null | "approved" | "rejected">(null);
 
-  const queries = [versionQuery];
+  const queries = [versionQuery, machinesQuery, approvalsQuery];
   if (needsQueryStatus(queries))
     return <QueryStatus queries={queries} subject="schedule approvals" />;
 
@@ -272,6 +274,8 @@ function SignModal({
       toast.success(`v${v.version_no} ${decision}`);
       qc.invalidateQueries({ queryKey: ["versions"] });
       qc.invalidateQueries({ queryKey: ["table", "approvals"] });
+      qc.invalidateQueries({ queryKey: ["plan-status"] });
+      qc.invalidateQueries({ queryKey: ["table", "audit_log"] });
       onClose();
     } catch (e) {
       toast.error(errMsg(e));

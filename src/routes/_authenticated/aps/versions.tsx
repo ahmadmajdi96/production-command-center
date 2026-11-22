@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/aps/versions")({
 function Versions() {
   const versionQuery = useVersions();
   const { data: versions = [] } = versionQuery;
-  const { data: approvals = [] } = useTable<{
+  const approvalsQuery = useTable<{
     id: string;
     version_id: string;
     decision: string;
@@ -49,12 +49,13 @@ function Versions() {
     signed_at: string;
     comment: string | null;
   }>("approvals", { column: "signed_at", ascending: false });
+  const { data: approvals = [] } = approvalsQuery;
   const [a, setA] = useState("");
   const [b, setB] = useState("");
   const A = versions.find((v) => v.id === (a || versions[1]?.id));
   const B = versions.find((v) => v.id === (b || versions[0]?.id));
   const diff = useMemo(() => (A && B ? compareVersions(A.items, B.items) : null), [A, B]);
-  const queries = [versionQuery];
+  const queries = [versionQuery, approvalsQuery];
   if (needsQueryStatus(queries))
     return <QueryStatus queries={queries} subject="schedule versions" />;
 

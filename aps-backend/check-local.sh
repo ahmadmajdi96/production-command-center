@@ -44,3 +44,50 @@ for migration in 0003_service_access 0004_retire_direct_reads; do
 done
 
 psql_local --quiet --dbname="$aps_test_database" --file="$aps_backend/check-service-only.sql"
+
+migration=0005_schedule_transactions
+psql_local --quiet --single-transaction --dbname="$aps_test_database" \
+  --file="$aps_backend/post-migrations/$migration.sql"
+printf 'Applied %s\n' "$migration"
+
+create_draft() {
+  psql_local --quiet --dbname="$aps_test_database" <<'SQL'
+SET ROLE service_role;
+SELECT public.aps_create_schedule_draft('planner@example.test',
+  '{"trigger":"new_plan","reason":"Concurrency test","horizon_start":"2026-11-22T06:00:00Z",
+    "items":[],"conflicts":[],"metrics":{},"rules_applied":[],"feasibility":[],"input_snapshot":{}}');
+SQL
+}
+create_draft > "$aps_test_dir/draft1.out" &
+first_draft_pid=$!
+create_draft > "$aps_test_dir/draft2.out" &
+second_draft_pid=$!
+wait "$first_draft_pid"
+wait "$second_draft_pid"
+
+psql_local --quiet --dbname="$aps_test_database" --command="
+  SET ROLE service_role;
+  SELECT public.aps_transition_schedule(id, 'planner@example.test', 'submit')
+  FROM public.schedule_versions WHERE version_no = 2;"
+
+approve_draft() {
+  psql_local --quiet --dbname="$aps_test_database" --command="
+    SET ROLE service_role;
+    SELECT public.aps_transition_schedule(id, 'signer@example.test', 'approved')
+    FROM public.schedule_versions WHERE version_no = 2;"
+}
+approve_draft > "$aps_test_dir/approval1.out" 2>&1 &
+first_approval_pid=$!
+approve_draft > "$aps_test_dir/approval2.out" 2>&1 &
+second_approval_pid=$!
+results=()
+for approval_pid in "$first_approval_pid" "$second_approval_pid"; do
+  if wait "$approval_pid"; then results+=(accepted); else results+=(rejected); fi
+done
+if [[ "${results[0]}" == "${results[1]}" ]] ||
+  ! grep -q 'This version is not awaiting approval' "$aps_test_dir"/approval*.out; then
+  cat "$aps_test_dir"/approval*.out >&2
+  exit 1
+fi
+
+psql_local --quiet --dbname="$aps_test_database" --file="$aps_backend/check-schedule-transactions.sql"
